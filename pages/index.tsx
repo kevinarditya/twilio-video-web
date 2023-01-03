@@ -1,4 +1,4 @@
-import { Box, Button, Grid, LinearProgress, Stack, TextField, Typography } from '@mui/material';
+import { AlertColor, Box, Button, Grid, LinearProgress, Stack, TextField, Typography } from '@mui/material';
 import Head from 'next/head';
 import React, { useState, useCallback, ChangeEvent } from 'react';
 import MySnackbar from '../components/MySnackbar';
