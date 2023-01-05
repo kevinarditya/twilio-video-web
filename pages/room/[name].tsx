@@ -7,6 +7,8 @@ import React, { ChangeEvent, useState } from 'react';
 import { useRef } from 'react';
 import { useMemo, useCallback } from 'react';
 import Loading from '../../components/Loading';
+import Lobby from '../../components/Lobby';
+import Room from '../../components/Room';
 import RoomNotFound from '../../components/RoomNotFound';
 
 export default function VideoCall() {
@@ -15,6 +17,7 @@ export default function VideoCall() {
   const [token, setToken] = useState('');
   const [username, setUsername] = useState('');
   const roomFetchedRef = useRef(false);
+  const usernameSubmitRef = useRef(false);
   const router = useRouter()
   const { name } = router.query
 
@@ -56,6 +59,7 @@ export default function VideoCall() {
 
       if (response.status === 200) {
         setToken(response.data.token);
+        usernameSubmitRef.current = true;
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -73,6 +77,12 @@ export default function VideoCall() {
     setUsername(event.target.value);
   }, []);
 
+  const handleLogout = useCallback(() => {
+    setToken(null);
+    setUsername('');
+    usernameSubmitRef.current = false;
+  }, []);
+
   return (
     <>
       <CssBaseline />
@@ -83,6 +93,15 @@ export default function VideoCall() {
         <link rel="icon" href="/video-call-icon.svg" />
       </Head>
       <main>
+        {
+          usernameSubmitRef.current && (
+            <Room
+              roomName={roomName}
+              token={token}
+              handleLogout={handleLogout}
+            />
+          )
+        }
         <Box
           sx={{
             backgroundImage: `url('/large-triangles.svg')`,
@@ -96,20 +115,14 @@ export default function VideoCall() {
             }}
           >
             {
-              isLoading ? <Loading /> : roomName === '' ? <RoomNotFound /> : (
-                <Stack sx={{ height: '100vh' }} justifyContent="center" alignItems="center" spacing={3}>
-                  <Typography variant="h3">Join Video Call</Typography>
-                  <TextField
-                    id="room-username"
-                    label="Username"
-                    variant="outlined"
-                    value={username}
-                    onChange={handleUsernameChange}
-                    fullWidth
+              isLoading ? <Loading /> : roomName === '' ? <RoomNotFound /> : !usernameSubmitRef.current ?
+                (
+                  <Lobby
+                    username={username}
+                    handleUsernameChange={handleUsernameChange}
+                    handleSubmit={handleSubmit}
                   />
-                  <Button disabled={username.length === 0} onClick={handleSubmit} variant="contained" fullWidth>Join</Button>
-                </Stack>
-              )
+                ) : ''
             }
           </Container>
         </Box>
