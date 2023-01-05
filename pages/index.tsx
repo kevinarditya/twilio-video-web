@@ -51,7 +51,7 @@ export default function Home() {
           isLoading && <LinearProgress />
         }
         <Grid container direction="row" sx={{ height: '100vh' }} >
-          <Grid item sm={8} sx={{ position: 'relative' }}>
+          <Grid item sm={9} sx={{ position: 'relative' }}>
             <Box
               sx={{
                 backgroundImage: `url('/large-triangles.svg')`,
@@ -59,7 +59,15 @@ export default function Home() {
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid 
+            item 
+            xs={12} 
+            sm={3}
+            sx={{
+              zIndex: 999,
+              boxShadow: '0px 00px 30px 5px'
+            }}
+          >
             <Stack
               justifyContent="center"
               alignItems="center"

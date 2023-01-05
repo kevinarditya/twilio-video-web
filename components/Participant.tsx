@@ -3,18 +3,11 @@ import { Box, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Video from 'twilio-video';
+import VideoAudio from './VideoAudio';
 
 type ParticipantProps = {
   participant: Video.LocalParticipant | Video.RemoteParticipant,
 }
-
-const VideoPlayer = styled('video')(
-  () => `
-    width: 100%;
-    height: auto;
-    min-height: 26rem;
-  `
-);
 
 export default function Participant({ participant } : ParticipantProps) {
   const [videoTracks, setVideoTracks] = useState([]);
@@ -92,8 +85,10 @@ export default function Participant({ participant } : ParticipantProps) {
         }}
       >
         <Typography variant="body1" align="center">{participant.identity}</Typography>
-        <VideoPlayer ref={videoRef} autoPlay={true} />
-        <audio ref={audioRef} autoPlay={true} muted={true} />
+        <VideoAudio 
+          videoRef={videoRef}
+          audioRef={audioRef}
+        />
       </Box>
     </div>
   );
