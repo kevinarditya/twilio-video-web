@@ -7,9 +7,10 @@ import VideoAudio from './VideoAudio';
 
 type ParticipantProps = {
   participant: Video.LocalParticipant | Video.RemoteParticipant,
+  addAudioTrack: (audioTrack: any) => void
 }
 
-export default function Participant({ participant } : ParticipantProps) {
+export default function Participant({ participant, addAudioTrack } : ParticipantProps) {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
 
@@ -70,11 +71,12 @@ export default function Participant({ participant } : ParticipantProps) {
     const audioTrack = audioTracks[0];
     if (audioTrack) {
       audioTrack.attach(audioRef.current);
+      addAudioTrack(audioTrack.mediaStreamTrack);
       return () => {
         audioTrack.detach();
       };
     }
-  }, [audioTracks]);
+  }, [audioTracks, addAudioTrack]);
 
   return (
     <div className="participant">

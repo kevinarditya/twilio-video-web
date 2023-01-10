@@ -1,7 +1,9 @@
 import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import React, { useCallback, useEffect } from 'react';
 import Video from 'twilio-video';
 import Participant from './Participant';
+const ScreenRecorder = dynamic(() => import('./ScreenRecorder'), { ssr: false });
 
 type RoomProps = {
   roomName: string,
@@ -12,6 +14,7 @@ type RoomProps = {
 export default function Room({ roomName, token, handleLogout }: RoomProps) {
   const [room, setRoom] = React.useState<Video.Room>(null);
   const [participants, setParticipants] = React.useState([]);
+  const [audioTracks, setAudioTracks] = React.useState([]);
 
   useEffect(() => {
     const participantConnected = (participant: Video.RemoteParticipant) => {
@@ -50,9 +53,13 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
     };
   }, [roomName, token]);
 
+  const handleAddParticipantTrack = useCallback((audioTrack: any) => {
+    setAudioTracks((prevAudioTracks) => [...prevAudioTracks, audioTrack]);
+  }, []);
+
   const remoteParticipants = participants.map((participant) => (
     <Grid item xs={6} key={participant.sid}>
-      <Participant participant={participant} />
+      <Participant participant={participant} addAudioTrack={handleAddParticipantTrack}/>
     </Grid>
   ));
 
@@ -75,6 +82,7 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                 <Participant
                   key={room.localParticipant.sid}
                   participant={room.localParticipant}
+                  addAudioTrack={handleAddParticipantTrack}
                 />
               </Grid>
               {remoteParticipants}
@@ -82,6 +90,9 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
           ) : (
             ''
           )}
+          <ScreenRecorder
+            audioTracks={audioTracks}
+          />
         </Stack>
       </Container>
     </Box>

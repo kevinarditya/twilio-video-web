@@ -1,4 +1,4 @@
-import { Box, Button, Container, CssBaseline, Stack, TextField, Typography } from '@mui/material';
+import { Box, Container, CssBaseline } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import axios, { AxiosError } from 'axios';
 import Head from 'next/head';
@@ -20,6 +20,7 @@ export default function VideoCall() {
   const usernameSubmitRef = useRef(false);
   const router = useRouter()
   const { name } = router.query
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
   type AccessRoom = {
     roomName: string,
@@ -32,7 +33,7 @@ export default function VideoCall() {
       if (name && !roomFetchedRef.current) {
         roomFetchedRef.current = true;
         try {
-          const response = await axios.get<AccessRoom>('https://video-call.apps.vinslab.com/api/room/' + name)
+          const response = await axios.get<AccessRoom>(serverUrl + '/room/' + name)
 
           if (response.status === 200) {
             setRoomName(response.data.roomName);
@@ -49,13 +50,13 @@ export default function VideoCall() {
           }
         }
       }
-    }, [name]
+    }, [name, serverUrl]
   );
 
   const handleSubmit = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.post<AccessRoom>('https://video-call.apps.vinslab.com/api/room/' + name + '/join', { username })
+      const response = await axios.post<AccessRoom>(serverUrl + '/room/' + name + '/join', { username })
 
       if (response.status === 200) {
         setToken(response.data.token);
@@ -71,7 +72,7 @@ export default function VideoCall() {
     }
 
     setLoading(false);
-  }, [name, username]);
+  }, [name, username, serverUrl]);
 
   const handleUsernameChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
