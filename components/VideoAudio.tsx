@@ -1,4 +1,4 @@
-import { styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import React, { MutableRefObject } from 'react';
 
 type VideoAudioProps = {
@@ -8,16 +8,19 @@ type VideoAudioProps = {
 
 const VideoPlayer = styled('video')(
   () => `
-    width: 100%;
-    height: auto;
-    min-height: 26rem;
+    min-height: 100%;
+    min-width: 100%;
+    object-fit: cover;
+    border-radius: 0 0 10px 10px;
   `
 );
 
 export default function VideoAudio({ videoRef, audioRef }: VideoAudioProps) {
   return (
     <>
-      <VideoPlayer ref={videoRef} autoPlay={true} />
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <VideoPlayer ref={videoRef} autoPlay={true} width="100" height="100" />
+      </Box>
       <audio ref={audioRef} autoPlay={true} muted={false} />
     </>
   );

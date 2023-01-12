@@ -9,7 +9,7 @@ type ParticipantProps = {
   addAudioTrack: (audioTrack: any) => void
 }
 
-export default function Participant({ participant, addAudioTrack } : ParticipantProps) {
+export default function Participant({ participant, addAudioTrack }: ParticipantProps) {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
 
@@ -20,11 +20,11 @@ export default function Participant({ participant, addAudioTrack } : Participant
     Array.from(trackMap.values())
       .map((publication) => publication.track)
       .filter((track) => track !== null), []);
-  
+
   const trackVideoPubsToTracks = useCallback((trackMap: Map<string, Video.LocalVideoTrackPublication | Video.RemoteVideoTrackPublication>) =>
     Array.from(trackMap.values())
-    .map((publication) => publication.track)
-    .filter((track) => track !== null), []);
+      .map((publication) => publication.track)
+      .filter((track) => track !== null), []);
 
   useEffect(() => {
     setVideoTracks(trackVideoPubsToTracks(participant.videoTracks));
@@ -78,19 +78,17 @@ export default function Participant({ participant, addAudioTrack } : Participant
   }, [audioTracks, addAudioTrack]);
 
   return (
-    <div className="participant">
-      <Box
-        sx={{
-          backgroundColor: grey[500],
-          minHeight: '31rem'
-        }}
-      >
-        <Typography variant="body1" align="center">{participant.identity}</Typography>
-        <VideoAudio 
-          videoRef={videoRef}
-          audioRef={audioRef}
-        />
-      </Box>
-    </div>
+    <Box
+      sx={{
+        backgroundColor: 'black',
+        borderRadius: '0 0 10px 10px',
+        height: '100%'
+      }}
+    >
+      <VideoAudio
+        videoRef={videoRef}
+        audioRef={audioRef}
+      />
+    </Box>
   );
 }

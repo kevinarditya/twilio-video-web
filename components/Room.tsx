@@ -1,8 +1,12 @@
-import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { CallEnd } from '@mui/icons-material';
+import { AppBar, Box, Button, CircularProgress, Container, Grid, IconButton, Stack, Toolbar, Typography } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect } from 'react';
 import Video from 'twilio-video';
+import Chat from './Chat';
 import Participant from './Participant';
+import ScreenshotPreview from './ScreenshotPreview';
 const ScreenRecorder = dynamic(() => import('./ScreenRecorder'), { ssr: false });
 
 type RoomProps = {
@@ -12,7 +16,7 @@ type RoomProps = {
 }
 
 export default function Room({ roomName, token, handleLogout }: RoomProps) {
-  const [room, setRoom] = React.useState<Video.Room>(null);
+  const [room, setRoom] = React.useState<Video.Room>();
   const [participants, setParticipants] = React.useState([]);
   const [audioTracks, setAudioTracks] = React.useState([]);
 
@@ -53,48 +57,94 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
     };
   }, [roomName, token]);
 
+  useEffect(() => {
+    if (room && participants.filter((participant) => participant === room.localParticipant).length === 0) {
+      setParticipants(prevParticipants => [...prevParticipants.filter(p => p.state !== 'disconnected'), room.localParticipant]);
+    }
+  }, [room, participants])
+
   const handleAddParticipantTrack = useCallback((audioTrack: any) => {
     setAudioTracks((prevAudioTracks) => [...prevAudioTracks, audioTrack]);
   }, []);
 
   const remoteParticipants = participants.map((participant) => (
-    <Grid item xs={6} key={participant.sid}>
-      <Participant participant={participant} addAudioTrack={handleAddParticipantTrack}/>
+    <Grid item xs={12} key={participant.sid}>
+      <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
     </Grid>
   ));
 
   return (
     <Box
       sx={{
-        height: '100vh',
+        minHeight: '100vh',
+        maxHeight: '100vh',
+        height: 'auto',
+        overflow: 'auto',
         backgroundImage: `url('/protruding-squares.svg')`,
       }}
     >
-      <Container maxWidth="lg">
-        <Stack spacing={2}>
-          <Typography variant="h5" align="center" sx={{ color: 'white' }}>Room: {roomName}</Typography>
-          <Stack alignItems="end">
-            <Button variant="contained" onClick={handleLogout}>Log out</Button>
-          </Stack>
-          {room ? (
-            <Grid container>
-              <Grid item xs={6}>
-                <Participant
-                  key={room.localParticipant.sid}
-                  participant={room.localParticipant}
-                  addAudioTrack={handleAddParticipantTrack}
-                />
-              </Grid>
-              {remoteParticipants}
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>Room: {roomName}</Typography>
+        </Toolbar>
+      </AppBar>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          position: 'absolute',
+          padding: '1rem 1rem',
+          height: '96%',
+          overflow: 'auto',
+        }}
+      >
+        <Grid item xs={12} sm={8} md={9} xl={10} container>
+          <Grid item container direction="column" spacing={2}>
+            <Grid item sx={{ flexGrow: 6 }}>
+              <Stack sx={{ height: '100%', bgcolor: grey[600], borderRadius: '10px' }}>
+                <Box sx={{ padding: '.5rem', borderBottom: '1px solid black' }}>
+                  <Typography variant="h6" align="center">Video Call</Typography>
+                </Box>
+                <Stack direction="row" justifyContent="end" sx={{ padding: '.5rem', bgcolor: grey[500] }} spacing={1}>
+                  <ScreenRecorder
+                    audioTracks={audioTracks}
+                  />
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleLogout}
+                    startIcon={<CallEnd />}
+                  >
+                    Exit
+                  </Button>
+                </Stack>
+                {
+                  room ? (
+                    <Grid container sx={{ flexGrow: 1 }}>
+                      {remoteParticipants}
+                    </Grid>
+                  ) : (
+                    <Stack justifyContent="center" alignItems="center" sx={{ height: '100%', width: '100%', bgcolor: 'black', borderRadius: '0 0 10px 10px' }}>
+                      <CircularProgress />
+                    </Stack>
+                  )
+                }
+              </Stack>
             </Grid>
-          ) : (
-            ''
-          )}
-          <ScreenRecorder
-            audioTracks={audioTracks}
-          />
-        </Stack>
-      </Container>
-    </Box>
+            <Grid item sx={{ flexGrow: 1 }}>
+              <ScreenshotPreview />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} sm={4} md={3} xl={2} sx={{ height: '100%' }}>
+          <Chat username={room ? room.localParticipant.identity : ''} />
+        </Grid>
+      </Grid>
+      {/* <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
+        <Toolbar>
+          <Typography variant="h6">Room: {roomName}</Typography>
+        </Toolbar>
+      </AppBar> */}
+    </Box >
   )
 }
