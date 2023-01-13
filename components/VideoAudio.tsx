@@ -17,11 +17,9 @@ const VideoPlayer = styled('video')(
 
 export default function VideoAudio({ videoRef, audioRef }: VideoAudioProps) {
   return (
-    <>
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <VideoPlayer ref={videoRef} autoPlay={true} width="100" height="100" />
-      </Box>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+      <VideoPlayer ref={videoRef} autoPlay={true} width="100" height="100" />
       <audio ref={audioRef} autoPlay={true} muted={false} />
-    </>
+    </Box>
   );
 }

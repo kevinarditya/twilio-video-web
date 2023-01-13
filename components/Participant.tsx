@@ -78,17 +78,9 @@ export default function Participant({ participant, addAudioTrack }: ParticipantP
   }, [audioTracks, addAudioTrack]);
 
   return (
-    <Box
-      sx={{
-        backgroundColor: 'black',
-        borderRadius: '0 0 10px 10px',
-        height: '100%'
-      }}
-    >
-      <VideoAudio
-        videoRef={videoRef}
-        audioRef={audioRef}
-      />
-    </Box>
+    <VideoAudio
+      videoRef={videoRef}
+      audioRef={audioRef}
+    />
   );
 }

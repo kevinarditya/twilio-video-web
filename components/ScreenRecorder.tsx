@@ -1,6 +1,6 @@
 import { PlayCircleFilled, StopCircle } from '@mui/icons-material';
 import { Button } from '@mui/material';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Recorder, useRecorderPermission } from '../hooks/useRecorderPermission';
 
 type ScreenRecorderProps = {

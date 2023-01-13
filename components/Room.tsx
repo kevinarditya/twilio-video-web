@@ -67,11 +67,44 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
     setAudioTracks((prevAudioTracks) => [...prevAudioTracks, audioTrack]);
   }, []);
 
-  const remoteParticipants = participants.map((participant) => (
-    <Grid item xs={12} key={participant.sid}>
-      <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
-    </Grid>
-  ));
+  const handleSwitchParticipant = useCallback(() => {
+    const newParticipants = [participants[1], participants[0]]
+    setParticipants(newParticipants);
+  }, [participants])
+
+  const remoteParticipants = participants.map((participant, index) => {
+    if (index === 1) {
+      return (
+        <Box
+          key={participant.sid}
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            zIndex: 10,
+            width: { xl: '20%', md: '25%' },
+            height: { xl: '30%', md: '25%', xs: '40%' },
+            borderRadius: '10px',
+            backgroundColor: 'black',
+          }}
+        >
+          <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
+        </Box>
+      )
+    }
+    return (
+      <Box
+        key={participant.sid}
+        sx={{
+          backgroundColor: 'black',
+          borderRadius: '0 0 10px 10px',
+          height: '100%'
+        }}
+      >
+        <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
+      </Box>
+    )
+  });
 
   return (
     <Box
@@ -106,6 +139,13 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                   <Typography variant="h6" align="center">Video Call</Typography>
                 </Box>
                 <Stack direction="row" justifyContent="end" sx={{ padding: '.5rem', bgcolor: grey[500] }} spacing={1}>
+                  <Button
+                    variant="contained"
+                    onClick={handleSwitchParticipant}
+                    disabled={participants.length === 1}
+                  >
+                    Switch
+                  </Button>
                   <ScreenRecorder
                     audioTracks={audioTracks}
                   />
@@ -120,9 +160,9 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                 </Stack>
                 {
                   room ? (
-                    <Grid container sx={{ flexGrow: 1 }}>
+                    <Box sx={{ position: 'relative', flexGrow: 1 }}>
                       {remoteParticipants}
-                    </Grid>
+                    </Box>
                   ) : (
                     <Stack justifyContent="center" alignItems="center" sx={{ height: '100%', width: '100%', bgcolor: 'black', borderRadius: '0 0 10px 10px' }}>
                       <CircularProgress />
