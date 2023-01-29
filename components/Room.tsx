@@ -2,7 +2,7 @@ import { CallEnd } from '@mui/icons-material';
 import { AppBar, Box, Button, CircularProgress, Container, Grid, IconButton, Stack, Toolbar, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import dynamic from 'next/dynamic';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import Video from 'twilio-video';
 import Chat from './Chat';
 import Participant from './Participant';
@@ -19,6 +19,8 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
   const [room, setRoom] = React.useState<Video.Room>();
   const [participants, setParticipants] = React.useState([]);
   const [audioTracks, setAudioTracks] = React.useState([]);
+  const remoteRef = useRef(null);
+  const [screenshots, setScreenshots] = React.useState([]);
 
   useEffect(() => {
     const participantConnected = (participant: Video.RemoteParticipant) => {
@@ -70,7 +72,15 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
   const handleSwitchParticipant = useCallback(() => {
     const newParticipants = [participants[1], participants[0]]
     setParticipants(newParticipants);
-  }, [participants])
+  }, [participants]);
+
+  const handleScreenshotRemoteParticipant = useCallback((data: any) => {
+    remoteRef.current!.handleScreenshot();
+  }, []);
+
+  const handleAddScreenshot = useCallback((screenshot: string) => {
+    setScreenshots((prevScreenshots) => [...prevScreenshots, screenshot])
+  }, []);
 
   const remoteParticipants = participants.map((participant, index) => {
     if (index === 1) {
@@ -88,7 +98,14 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
             backgroundColor: 'black',
           }}
         >
-          <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
+          {
+            participant !== room.localParticipant ? (
+              <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} ref={remoteRef} addScreenshot={handleAddScreenshot} />
+            ) : (
+              <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
+            )
+          }
+          
         </Box>
       )
     }
@@ -101,7 +118,13 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
           height: '100%'
         }}
       >
-        <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
+        {
+          participant !== room.localParticipant ? (
+            <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} ref={remoteRef} addScreenshot={handleAddScreenshot} />
+          ) : (
+            <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
+          )
+        }
       </Box>
     )
   });
@@ -141,6 +164,13 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                 <Stack direction="row" justifyContent="end" sx={{ padding: '.5rem', bgcolor: grey[500] }} spacing={1}>
                   <Button
                     variant="contained"
+                    onClick={handleScreenshotRemoteParticipant}
+                    disabled={participants.length === 1}
+                  >
+                    Screenshot
+                  </Button>
+                  <Button
+                    variant="contained"
                     onClick={handleSwitchParticipant}
                     disabled={participants.length === 1}
                   >
@@ -172,7 +202,7 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
               </Stack>
             </Grid>
             <Grid item sx={{ flexGrow: 1 }}>
-              <ScreenshotPreview />
+              <ScreenshotPreview listScreenshot={screenshots} />
             </Grid>
           </Grid>
         </Grid>

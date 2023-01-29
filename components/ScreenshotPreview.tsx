@@ -2,7 +2,11 @@ import { Box, Grid, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React from 'react';
 
-export default function ScreenshotPreview() {
+type ScreenshotPreviewProps = {
+  listScreenshot: any[]
+}
+
+export default function ScreenshotPreview({ listScreenshot }: ScreenshotPreviewProps) {
   return (
     <Stack
       sx={{
@@ -18,12 +22,13 @@ export default function ScreenshotPreview() {
         sx={{ bgcolor: 'white', height: '100%', padding: '1rem 1rem' }}
       >
         <Grid container spacing={1} sx={{ height: '100%' }}>
-          <Grid item xs={12} md={4} xl={2}>
-            <Box sx={{ height: '15rem', bgcolor: grey[300] }}></Box>
-          </Grid>
-          <Grid item xs={12} md={4} xl={2}>
-            <Box sx={{ height: '15rem', bgcolor: grey[300] }}></Box>
-          </Grid>
+          {
+            listScreenshot.map((screenshot, index) => (
+              <Grid key={index} item xs={12} md={4} xl={2}>
+                <img src={screenshot} alt="screenshot" />
+              </Grid>
+            ))
+          }
           <Grid item xs={12} md={4} xl={2}>
             <Box sx={{ height: '15rem', bgcolor: grey[300] }}></Box>
           </Grid>

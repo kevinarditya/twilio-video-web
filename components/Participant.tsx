@@ -1,20 +1,37 @@
-import { Box, Typography } from '@mui/material';
-import { grey } from '@mui/material/colors';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, Ref, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import Video from 'twilio-video';
 import VideoAudio from './VideoAudio';
 
 type ParticipantProps = {
   participant: Video.LocalParticipant | Video.RemoteParticipant,
-  addAudioTrack: (audioTrack: any) => void
+  addAudioTrack: (audioTrack: any) => void,
+  addScreenshot?: (screenshot: string) => void,
+}
+type RemoteRef = {
+  handleScreenshot: () => void;
 }
 
-export default function Participant({ participant, addAudioTrack }: ParticipantProps) {
+function Participant({ participant, addAudioTrack, addScreenshot }: ParticipantProps, ref: Ref<RemoteRef>) {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
 
   const videoRef = useRef<HTMLVideoElement>(null!);
   const audioRef = useRef<HTMLAudioElement>(null!);
+  const canvasRef = useRef(null)
+
+  const handleScreenshot = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(function(blob: Blob) {
+      addScreenshot(URL.createObjectURL(blob));
+    });
+  }
+
+  useImperativeHandle(ref, () => ({
+    handleScreenshot
+  }));
 
   const trackAudioPubsToTracks = useCallback((trackMap: Map<string, Video.LocalAudioTrackPublication | Video.RemoteAudioTrackPublication>) =>
     Array.from(trackMap.values())
@@ -78,9 +95,14 @@ export default function Participant({ participant, addAudioTrack }: ParticipantP
   }, [audioTracks, addAudioTrack]);
 
   return (
-    <VideoAudio
-      videoRef={videoRef}
-      audioRef={audioRef}
-    />
+    <>
+      <VideoAudio
+        videoRef={videoRef}
+        audioRef={audioRef}
+      />
+      <canvas ref={canvasRef} width={300} height={150} style={{ display: "none" }}></canvas>
+    </>
   );
 }
+
+export default forwardRef<RemoteRef, ParticipantProps>(Participant);
