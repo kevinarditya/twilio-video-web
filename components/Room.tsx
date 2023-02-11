@@ -8,6 +8,7 @@ import Chat from './Chat';
 import Participant from './Participant';
 import ScreenshotPreview from './ScreenshotPreview';
 const ScreenRecorder = dynamic(() => import('./ScreenRecorder'), { ssr: false });
+const AudioRecorder = dynamic(() => import('./AudioRecorder'), { ssr: false });
 
 type RoomProps = {
   roomName: string,
@@ -155,13 +156,16 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
         }}
       >
         <Grid item xs={12} sm={8} md={9} xl={10} container>
-          <Grid item container direction="column" spacing={2}>
-            <Grid item sx={{ flexGrow: 6 }}>
+          <Grid item container direction="column" justifyContent="end" spacing={2}>
+            <Grid item sx={{ flexGrow: 1 }}>
               <Stack sx={{ height: '100%', bgcolor: grey[600], borderRadius: '10px' }}>
                 <Box sx={{ padding: '.5rem', borderBottom: '1px solid black' }}>
                   <Typography variant="h6" align="center">Video Call</Typography>
                 </Box>
                 <Stack direction="row" justifyContent="end" sx={{ padding: '.5rem', bgcolor: grey[500] }} spacing={1}>
+                  <AudioRecorder 
+                    audioTracks={audioTracks}    
+                  />
                   <Button
                     variant="contained"
                     onClick={handleScreenshotRemoteParticipant}
@@ -201,7 +205,7 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                 }
               </Stack>
             </Grid>
-            <Grid item sx={{ flexGrow: 1 }}>
+            <Grid item md={2}>
               <ScreenshotPreview listScreenshot={screenshots} />
             </Grid>
           </Grid>

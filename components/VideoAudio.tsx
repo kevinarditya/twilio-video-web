@@ -10,7 +10,6 @@ const VideoPlayer = styled('video')(
   () => `
     min-height: 100%;
     min-width: 100%;
-    object-fit: cover;
     border-radius: 0 0 10px 10px;
   `
 );

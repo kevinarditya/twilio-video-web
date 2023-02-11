@@ -19,7 +19,7 @@ export default function ScreenshotPreview({ listScreenshot }: ScreenshotPreviewP
         <Typography variant="h6">Screenshot Preview</Typography>
       </Box>
       <Box
-        sx={{ bgcolor: 'white', height: '100%', padding: '1rem 1rem' }}
+        sx={{ bgcolor: 'white', height: '100%', padding: '1rem 1rem', overflow: 'scroll' }}
       >
         <Grid container spacing={1} sx={{ height: '100%' }}>
           {
@@ -30,7 +30,7 @@ export default function ScreenshotPreview({ listScreenshot }: ScreenshotPreviewP
             ))
           }
           <Grid item xs={12} md={4} xl={2}>
-            <Box sx={{ height: '15rem', bgcolor: grey[300] }}></Box>
+            <Box sx={{ height: '10rem', bgcolor: grey[300] }}></Box>
           </Grid>
         </Grid>
       </Box>

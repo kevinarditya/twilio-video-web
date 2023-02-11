@@ -9,7 +9,7 @@ export type Recorder = {
   isRecording: boolean,
 }
 
-export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>) => {
+export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type: string) => {
   const [audioContext] = useState(new AudioContext());
   const [isRecording, setRecording] = useState<boolean>(false);
   const [recorder, setRecorder] = useState<any>();
@@ -36,7 +36,7 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>) => {
     }
   }, [audioTracks, audio, audioContext, video]);
 
-  const getPermissionInitializeRecorder = useCallback(async () => {
+  const initVideoRecorder = useCallback(async () => {
     let video = await navigator.mediaDevices.getDisplayMedia({
       video: true,
       audio: false,
@@ -47,16 +47,39 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>) => {
     setMixer(mixer);
 
     return mixer;
+  }, [audio])
+
+  const initAudioRecorder = useCallback(async () => {
+    const mixer = new MediaStream([...audio.stream.getTracks()])
+    setMixer(mixer);
+
+    return mixer;
   }, [audio]);
 
-  const handleStartRecorder = useCallback(async () => {
-    const mixer = await getPermissionInitializeRecorder();
+  const getPermissionInitializeRecorder = useCallback(async () => {
+    if(type === 'audio') {
+      return initAudioRecorder();
+    }
 
-    let recorder = new RecordRTCPromisesHandler(mixer, {
-      type: 'video',
-      canvas: { width: 480, height: 360 },
-      checkForInactiveTracks: true
-    });
+    return initVideoRecorder();
+  }, [initVideoRecorder, initAudioRecorder, type]);
+
+  const handleStartRecorder = useCallback(async () => {
+    let recorder;
+    const mixer = await getPermissionInitializeRecorder();
+    
+    if (type === 'audio') {
+      recorder = new RecordRTCPromisesHandler(mixer, {
+        type: 'audio',
+        mimeType: 'audio/webm',
+      });
+    } else {
+      recorder = new RecordRTCPromisesHandler(mixer, {
+        type: 'video',
+        canvas: { width: 480, height: 360 },
+        checkForInactiveTracks: true
+      });
+    }
     setRecorder(recorder);
 
     if (isRecording) {
@@ -66,7 +89,7 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>) => {
       recorder.startRecording();
       alert('Start Recording');
     }
-  }, [getPermissionInitializeRecorder, isRecording]);
+  }, [getPermissionInitializeRecorder, isRecording, type]);
 
   const handleStopRecorder = useCallback(async () => {
     if (isRecording) {

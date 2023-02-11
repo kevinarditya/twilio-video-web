@@ -3,12 +3,12 @@ import { Button } from '@mui/material';
 import React, { useCallback } from 'react';
 import { Recorder, useRecorderPermission } from '../hooks/useRecorderPermission';
 
-type ScreenRecorderProps = {
+type AudioRecorderProps = {
   audioTracks: Array<MediaStreamTrack>
 }
 
-export default function ScreenRecorder({ audioTracks }: ScreenRecorderProps) {
-  const recorder: Recorder = useRecorderPermission(audioTracks, 'video');
+export default function AudioRecorder({ audioTracks }: AudioRecorderProps) {
+  const recorder: Recorder = useRecorderPermission(audioTracks, 'audio');
 
   const handleToogleRecording = useCallback(() => {
     if (!recorder.isRecording) {
@@ -25,7 +25,7 @@ export default function ScreenRecorder({ audioTracks }: ScreenRecorderProps) {
   const handleDownloadRecording = useCallback(() => {
     recorder.downloadRecord();
   }, [recorder]);
-
+  
   return (
     <>
       <Button
@@ -34,14 +34,14 @@ export default function ScreenRecorder({ audioTracks }: ScreenRecorderProps) {
         sx={{ backgroundColor: recorder.isRecording ? 'white' : '' }}
         onClick={handleToogleRecording}
       >
-        {recorder.isRecording ? 'Stop Recording' : 'Start Video Recording'}
+        {recorder.isRecording ? 'Stop Recording' : 'Start Audio Recording'}
       </Button>
       <Button
         variant="contained"
         onClick={handleDownloadRecording}
       >
-        Download Video
+        Download Audio
       </Button>
     </>
   );
-};
+}
