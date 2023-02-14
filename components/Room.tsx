@@ -1,5 +1,5 @@
 import { CallEnd } from '@mui/icons-material';
-import { AppBar, Box, Button, CircularProgress, Container, Grid, IconButton, Stack, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, CircularProgress, Grid, Stack, Toolbar, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef } from 'react';
@@ -75,8 +75,8 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
     setParticipants(newParticipants);
   }, [participants]);
 
-  const handleScreenshotRemoteParticipant = useCallback((data: any) => {
-    remoteRef.current!.handleScreenshot();
+  const handleScreenshotRemoteParticipant = useCallback(() => {
+    remoteRef.current.handleScreenshot();
   }, []);
 
   const handleAddScreenshot = useCallback((screenshot: string) => {
@@ -106,7 +106,7 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
               <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
             )
           }
-          
+
         </Box>
       )
     }
@@ -155,7 +155,7 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
           overflow: 'auto',
         }}
       >
-        <Grid item xs={12} sm={8} md={9} xl={10} container>
+        <Grid item xs={12} sm={8} md={9} container>
           <Grid item container direction="column" justifyContent="end" spacing={2}>
             <Grid item sx={{ flexGrow: 1 }}>
               <Stack sx={{ height: '100%', bgcolor: grey[600], borderRadius: '10px' }}>
@@ -163,20 +163,20 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                   <Typography variant="h6" align="center">Video Call</Typography>
                 </Box>
                 <Stack direction="row" justifyContent="end" sx={{ padding: '.5rem', bgcolor: grey[500] }} spacing={1}>
-                  <AudioRecorder 
-                    audioTracks={audioTracks}    
+                  <AudioRecorder
+                    audioTracks={audioTracks}
                   />
                   <Button
                     variant="contained"
                     onClick={handleScreenshotRemoteParticipant}
-                    disabled={participants.length === 1}
+                    disabled={participants.length < 2}
                   >
                     Screenshot
                   </Button>
                   <Button
                     variant="contained"
                     onClick={handleSwitchParticipant}
-                    disabled={participants.length === 1}
+                    disabled={participants.length < 2}
                   >
                     Switch
                   </Button>
@@ -210,15 +210,10 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={4} md={3} xl={2} sx={{ height: '100%' }}>
+        <Grid item xs={12} sm={4} md={3} sx={{ height: '100%' }}>
           <Chat username={room ? room.localParticipant.identity : ''} />
         </Grid>
       </Grid>
-      {/* <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
-        <Toolbar>
-          <Typography variant="h6">Room: {roomName}</Typography>
-        </Toolbar>
-      </AppBar> */}
     </Box >
   )
 }

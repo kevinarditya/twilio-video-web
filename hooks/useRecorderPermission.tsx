@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { invokeSaveAsDialog, RecordRTCPromisesHandler } from "recordrtc";
 
 export type Recorder = {
@@ -15,7 +15,6 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
   const [recorder, setRecorder] = useState<any>();
   const [audio, setAudio] = useState<MediaStreamAudioDestinationNode>();
   const [video, setVideo] = useState<MediaStream>();
-  const [mixer, setMixer] = useState<MediaStream>();
 
   useEffect(() => {
     if (!audio) {
@@ -30,30 +29,23 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
       const audioSource = audioContext.createMediaStreamSource(audioMediaStream);
       audioSource.connect(audio);
     });
-    if (video && audio) {
-      console.log('update mixer');
-      setMixer(new MediaStream([...video.getTracks(), ...audio.stream.getTracks()]));
-    }
   }, [audioTracks, audio, audioContext, video]);
 
   const initVideoRecorder = useCallback(async () => {
     let video = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
+      video: {
+        width: 854,
+        height: 480
+      },
       audio: false,
     });
     setVideo(video);
 
-    const mixer = new MediaStream([...video.getTracks(), ...audio.stream.getTracks()])
-    setMixer(mixer);
-
-    return mixer;
+    return new MediaStream([...video.getTracks(), ...audio.stream.getTracks()]);
   }, [audio])
 
   const initAudioRecorder = useCallback(async () => {
-    const mixer = new MediaStream([...audio.stream.getTracks()])
-    setMixer(mixer);
-
-    return mixer;
+    return new MediaStream([...audio.stream.getTracks()])
   }, [audio]);
 
   const getPermissionInitializeRecorder = useCallback(async () => {
@@ -67,7 +59,7 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
   const handleStartRecorder = useCallback(async () => {
     let recorder;
     const mixer = await getPermissionInitializeRecorder();
-    
+
     if (type === 'audio') {
       recorder = new RecordRTCPromisesHandler(mixer, {
         type: 'audio',
@@ -76,8 +68,8 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
     } else {
       recorder = new RecordRTCPromisesHandler(mixer, {
         type: 'video',
-        canvas: { width: 480, height: 360 },
-        checkForInactiveTracks: true
+        mimeType: "video/webm;codecs=vp9",
+        frameInterval: 10,
       });
     }
     setRecorder(recorder);

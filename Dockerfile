@@ -5,7 +5,9 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
+COPY .yarn ./
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+RUN yarn set version berry
 RUN \
   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
   elif [ -f package-lock.json ]; then npm ci; \
@@ -16,8 +18,9 @@ RUN \
 
 # Rebuild the source code only when needed
 FROM node:16-alpine AS builder
+RUN yarn set version berry
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+#COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.

@@ -3,9 +3,7 @@ import { grey } from '@mui/material/colors';
 import axios, { AxiosError } from 'axios';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import React, { ChangeEvent, useState } from 'react';
-import { useRef } from 'react';
-import { useMemo, useCallback } from 'react';
+import React, { ChangeEvent, useState, useRef, useMemo, useCallback } from 'react';
 import Loading from '../../components/Loading';
 import Lobby from '../../components/Lobby';
 import Room from '../../components/Room';
@@ -19,7 +17,7 @@ export default function VideoCall() {
   const roomFetchedRef = useRef(false);
   const usernameSubmitRef = useRef(false);
   const router = useRouter()
-  const { name } = router.query
+  const {name} = router.query
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
   type AccessRoom = {
@@ -56,7 +54,7 @@ export default function VideoCall() {
   const handleSubmit = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.post<AccessRoom>(serverUrl + '/room/' + name + '/join', { username })
+      const response = await axios.post<AccessRoom>(serverUrl + '/room/' + name + '/join', {username})
 
       if (response.status === 200) {
         setToken(response.data.token);
@@ -86,12 +84,12 @@ export default function VideoCall() {
 
   return (
     <>
-      <CssBaseline />
+      <CssBaseline/>
       <Head>
         <title>Join Video Call</title>
-        <meta name="description" content="Join Video Call" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/video-call-icon.svg" />
+        <meta name="description" content="Join Video Call"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="icon" href="/video-call-icon.svg"/>
       </Head>
       <main>
         {
@@ -116,7 +114,13 @@ export default function VideoCall() {
             }}
           >
             {
-              isLoading ? <Loading /> : roomName === '' ? <RoomNotFound /> : !usernameSubmitRef.current ?
+              isLoading ? <Loading/> : ''
+            }
+            {
+              !isLoading && roomName === '' ? <RoomNotFound/> : ''
+            }
+            {
+              !usernameSubmitRef.current ?
                 (
                   <Lobby
                     username={username}

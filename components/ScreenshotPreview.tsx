@@ -1,6 +1,7 @@
 import { Box, Grid, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React from 'react';
+import { v4 } from 'uuid';
 
 type ScreenshotPreviewProps = {
   listScreenshot: any[]
@@ -23,11 +24,11 @@ export default function ScreenshotPreview({ listScreenshot }: ScreenshotPreviewP
       >
         <Grid container spacing={1} sx={{ height: '100%' }}>
           {
-            listScreenshot.map((screenshot, index) => (
-              <Grid key={index} item xs={12} md={4} xl={2}>
+            listScreenshot.map((screenshot,) =>
+              <Grid key={v4()} item xs={12} md={4} xl={2}>
                 <img src={screenshot} alt="screenshot" />
               </Grid>
-            ))
+            )
           }
           <Grid item xs={12} md={4} xl={2}>
             <Box sx={{ height: '10rem', bgcolor: grey[300] }}></Box>
