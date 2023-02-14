@@ -155,7 +155,7 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
           overflow: 'auto',
         }}
       >
-        <Grid item xs={12} sm={8} md={9} xl={10} container>
+        <Grid item xs={12} sm={8} md={9} container>
           <Grid item container direction="column" justifyContent="end" spacing={2}>
             <Grid item sx={{ flexGrow: 1 }}>
               <Stack sx={{ height: '100%', bgcolor: grey[600], borderRadius: '10px' }}>
@@ -169,14 +169,14 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                   <Button
                     variant="contained"
                     onClick={handleScreenshotRemoteParticipant}
-                    disabled={participants.length === 1}
+                    disabled={participants.length < 2}
                   >
                     Screenshot
                   </Button>
                   <Button
                     variant="contained"
                     onClick={handleSwitchParticipant}
-                    disabled={participants.length === 1}
+                    disabled={participants.length < 2}
                   >
                     Switch
                   </Button>
@@ -210,15 +210,10 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={4} md={3} xl={2} sx={{ height: '100%' }}>
+        <Grid item xs={12} sm={4} md={3} sx={{ height: '100%' }}>
           <Chat username={room ? room.localParticipant.identity : ''} />
         </Grid>
       </Grid>
-      {/* <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
-        <Toolbar>
-          <Typography variant="h6">Room: {roomName}</Typography>
-        </Toolbar>
-      </AppBar> */}
     </Box >
   )
 }
