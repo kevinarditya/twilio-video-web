@@ -1,5 +1,5 @@
 import { CallEnd } from '@mui/icons-material';
-import { AppBar, Box, Button, CircularProgress, Container, Grid, IconButton, Stack, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, CircularProgress, Grid, Stack, Toolbar, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef } from 'react';
@@ -75,8 +75,8 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
     setParticipants(newParticipants);
   }, [participants]);
 
-  const handleScreenshotRemoteParticipant = useCallback((data: any) => {
-    remoteRef.current!.handleScreenshot();
+  const handleScreenshotRemoteParticipant = useCallback(() => {
+    remoteRef.current.handleScreenshot();
   }, []);
 
   const handleAddScreenshot = useCallback((screenshot: string) => {
@@ -106,7 +106,7 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
               <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
             )
           }
-          
+
         </Box>
       )
     }
@@ -163,8 +163,8 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                   <Typography variant="h6" align="center">Video Call</Typography>
                 </Box>
                 <Stack direction="row" justifyContent="end" sx={{ padding: '.5rem', bgcolor: grey[500] }} spacing={1}>
-                  <AudioRecorder 
-                    audioTracks={audioTracks}    
+                  <AudioRecorder
+                    audioTracks={audioTracks}
                   />
                   <Button
                     variant="contained"

@@ -1,4 +1,4 @@
-import { CssBaseline, Box, Stack, Typography, CircularProgress } from '@mui/material';
+import { CssBaseline, Box, Stack, CircularProgress } from '@mui/material';
 import React from 'react';
 
 export default function Loading() {

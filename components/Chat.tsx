@@ -1,9 +1,10 @@
 import { AttachFile, Send } from '@mui/icons-material';
 import { Box, IconButton, Stack, TextField, Typography } from '@mui/material';
-import { blue, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import React, { ChangeEvent, useCallback, useState } from 'react';
 import MessageLeft, { Message } from './MessageLeft';
 import MessageRight from './MessageRight';
+import { v4 } from 'uuid';
 
 type ChatProps = {
   username: string
@@ -45,19 +46,19 @@ export default function Chat({ username }: ChatProps) {
           <MessageLeft message="Halo" username={username} timestamp="12/01/2022 10:17:00" />
           <MessageLeft message="Halo" username={username} timestamp="12/01/2022 10:17:00" />
           {
-            messages.map((m: Message, index) => 
-              m.username === username ? <MessageRight key={index} message={m.message} username={m.username} timestamp={m.timestamp} /> : <MessageLeft key={index} message={m.message} username={m.username} timestamp={m.timestamp} />
+            messages.map((m: Message) =>
+              m.username === username ? <MessageRight key={v4()} message={m.message} username={m.username} timestamp={m.timestamp} /> : <MessageLeft key={v4()} message={m.message} username={m.username} timestamp={m.timestamp} />
             )
           }
         </Stack>
       </Box>
       <Stack direction="row" sx={{ bgcolor: grey[300], borderRadius: '0 0 10px 10px' }}>
-        <TextField 
-          id="input-message" 
-          placeholder='Type a new message' 
-          variant="standard" 
-          size="small" 
-          sx={{ flexGrow: 1, borderRadius: '10px', padding: '0 .5rem', margin: '.8rem 0' }} 
+        <TextField
+          id="input-message"
+          placeholder='Type a new message'
+          variant="standard"
+          size="small"
+          sx={{ flexGrow: 1, borderRadius: '10px', padding: '0 .5rem', margin: '.8rem 0' }}
           value={message}
           onChange={handleOnChangeMessage}
         />
