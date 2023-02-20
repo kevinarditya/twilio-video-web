@@ -6,7 +6,9 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import Video from 'twilio-video';
 import Chat from './Chat';
 import Participant from './Participant';
-import ScreenshotPreview from './ScreenshotPreview';
+import ListItemPreview, { Item } from './ListItemPreview';
+import { v4 } from 'uuid';
+import moment from "moment";
 const ScreenRecorder = dynamic(() => import('./ScreenRecorder'), { ssr: false });
 const AudioRecorder = dynamic(() => import('./AudioRecorder'), { ssr: false });
 
@@ -21,7 +23,8 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
   const [participants, setParticipants] = React.useState([]);
   const [audioTracks, setAudioTracks] = React.useState([]);
   const remoteRef = useRef(null);
-  const [screenshots, setScreenshots] = React.useState([]);
+  const [screenshotIteration, setScreenshotIteration] = React.useState(1);
+  const [listItem, setListItem] = React.useState<Item[]>([]);
 
   useEffect(() => {
     const participantConnected = (participant: Video.RemoteParticipant) => {
@@ -80,8 +83,16 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
   }, []);
 
   const handleAddScreenshot = useCallback((screenshot: string) => {
-    setScreenshots((prevScreenshots) => [...prevScreenshots, screenshot])
-  }, []);
+    const metadata = {
+      id: v4(),
+      type: 'image',
+      filename: 'screenshot-' + screenshotIteration,
+      value: screenshot,
+      timestamp: moment().format('DD-MM-YYYY, H:mm:ss'),
+    };
+    setScreenshotIteration(screenshotIteration + 1);
+    setListItem((prevItems) => [...prevItems, metadata])
+  }, [screenshotIteration]);
 
   const remoteParticipants = participants.map((participant, index) => {
     if (index === 1) {
@@ -205,13 +216,14 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                 }
               </Stack>
             </Grid>
-            <Grid item md={2}>
-              <ScreenshotPreview listScreenshot={screenshots} />
-            </Grid>
+            {/*<Grid item md={2}>*/}
+            {/*  <ListItemPreview items={listItem} />*/}
+            {/*</Grid>*/}
           </Grid>
         </Grid>
         <Grid item xs={12} sm={4} md={3} sx={{ height: '100%' }}>
-          <Chat username={room ? room.localParticipant.identity : ''} />
+          {/*<Chat username={room ? room.localParticipant.identity : ''} />*/}
+          <ListItemPreview items={listItem} />
         </Grid>
       </Grid>
     </Box >
