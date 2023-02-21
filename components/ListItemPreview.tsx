@@ -2,12 +2,13 @@ import { Box, Grid, List, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React from 'react';
 import ImagePreview from "./ImagePreview";
+import AudioPreview from './AudioPreview';
 
 export type Item = {
   id: string,
   type: string,
   filename: string,
-  value: string,
+  value: string | Blob,
   timestamp: string,
 }
 
@@ -44,9 +45,14 @@ export default function ListItemPreview({ items }: ScreenshotPreviewProps) {
         {/*</Grid>*/}
         <List>
           {
-            items.map((item) => (
-              <ImagePreview key={item.id} metadata={item}/>
-            ))
+            items.map((item) => {
+              switch(item.type) {
+                case 'audio':
+                  return <AudioPreview key={item.id} metadata={item} />
+                default:
+                  return <ImagePreview key={item.id} metadata={item}/>
+              }
+            })
           }
         </List>
       </Box>

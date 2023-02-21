@@ -4,13 +4,14 @@ import React, { useCallback } from 'react';
 import { Recorder, useRecorderPermission } from '../hooks/useRecorderPermission';
 
 type AudioRecorderProps = {
-  audioTracks: Array<MediaStreamTrack>
+  audioTracks: Array<MediaStreamTrack>,
+  addRecorder: (recorderFile: string) => void
 }
 
-export default function AudioRecorder({ audioTracks }: AudioRecorderProps) {
+export default function AudioRecorder({ audioTracks, addRecorder }: AudioRecorderProps) {
   const recorder: Recorder = useRecorderPermission(audioTracks, 'audio');
 
-  const handleToogleRecording = useCallback(() => {
+  const handleToggleRecording = useCallback(async () => {
     if (!recorder.isRecording) {
       if (recorder) {
         recorder.startRecord();
@@ -18,29 +19,21 @@ export default function AudioRecorder({ audioTracks }: AudioRecorderProps) {
     } else {
       if (recorder) {
         recorder.stopRecord();
+        const recorderFileBlob = await recorder.getBlob();
+        addRecorder(recorderFileBlob);
       }
     }
-  }, [recorder]);
+  }, [recorder, addRecorder]);
 
-  const handleDownloadRecording = useCallback(() => {
-    recorder.downloadRecord();
-  }, [recorder]);
-  
   return (
     <>
       <Button
         variant={recorder.isRecording ? 'outlined' : 'contained'}
         startIcon={recorder.isRecording ? <StopCircle /> : <PlayCircleFilled />}
         sx={{ backgroundColor: recorder.isRecording ? 'white' : '' }}
-        onClick={handleToogleRecording}
+        onClick={handleToggleRecording}
       >
         {recorder.isRecording ? 'Stop Recording' : 'Start Audio Recording'}
-      </Button>
-      <Button
-        variant="contained"
-        onClick={handleDownloadRecording}
-      >
-        Download Audio
       </Button>
     </>
   );

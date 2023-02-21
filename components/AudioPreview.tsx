@@ -1,29 +1,31 @@
-import { InsertPhoto } from '@mui/icons-material';
-import { Box, Dialog, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import React from 'react';
-import { Item } from "./ListItemPreview";
+import { Item } from './ListItemPreview';
+import { Box, Dialog, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { MusicNote } from '@mui/icons-material';
 
-type ImagePreviewProps = {
+type AudioPreviewProps = {
   metadata: Item
 }
 
-type ImageDialogProps = {
+type AudioDialogProps = {
   open: boolean,
-  blob: string,
+  blob: Blob,
   onClose: () => void,
 }
 
-function ImageDialog({ open, blob, onClose }: ImageDialogProps) {
+function AudioDialog({ open, blob, onClose }: AudioDialogProps) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '.5rem'}}>
-        <img src={blob} alt="screenshot" />
+        <audio controls autoPlay>
+          <source src={URL.createObjectURL(blob)} type="audio/ogg"/>
+        </audio>
       </Box>
     </Dialog>
   )
 }
 
-function ImagePreview({ metadata }: ImagePreviewProps) {
+function AudioPreview({ metadata }: AudioPreviewProps) {
   const { filename, timestamp, value } = metadata;
   const [open, setOpen] = React.useState(false);
 
@@ -39,13 +41,13 @@ function ImagePreview({ metadata }: ImagePreviewProps) {
     <ListItem disablePadding>
       <ListItemButton onClick={handleClickOpen}>
         <ListItemIcon>
-          <InsertPhoto />
+          <MusicNote />
         </ListItemIcon>
         <ListItemText primary={filename} secondary={timestamp} />
       </ListItemButton>
-      <ImageDialog open={open} blob={value as string} onClose={handleClose} />
+      <AudioDialog open={open} blob={value as Blob} onClose={handleClose} />
     </ListItem>
   );
 }
 
-export default ImagePreview;
+export default AudioPreview;

@@ -4,7 +4,6 @@ import { grey } from '@mui/material/colors';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef } from 'react';
 import Video from 'twilio-video';
-import Chat from './Chat';
 import Participant from './Participant';
 import ListItemPreview, { Item } from './ListItemPreview';
 import { v4 } from 'uuid';
@@ -23,7 +22,7 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
   const [participants, setParticipants] = React.useState([]);
   const [audioTracks, setAudioTracks] = React.useState([]);
   const remoteRef = useRef(null);
-  const [screenshotIteration, setScreenshotIteration] = React.useState(1);
+  const [screenshotCount, setScreenshotCount] = React.useState(1);
   const [listItem, setListItem] = React.useState<Item[]>([]);
 
   useEffect(() => {
@@ -86,13 +85,25 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
     const metadata = {
       id: v4(),
       type: 'image',
-      filename: 'screenshot-' + screenshotIteration,
+      filename: 'screenshot-' + screenshotCount,
       value: screenshot,
       timestamp: moment().format('DD-MM-YYYY, H:mm:ss'),
     };
-    setScreenshotIteration(screenshotIteration + 1);
+    setScreenshotCount(screenshotCount + 1);
     setListItem((prevItems) => [...prevItems, metadata])
-  }, [screenshotIteration]);
+  }, [screenshotCount]);
+
+  const handleAddAudioRecorder = useCallback((recorderFile: string) => {
+    const metadata = {
+      id: v4(),
+      type: 'audio',
+      filename: 'audio-' + moment().format('DDMMYYYYHmmss'),
+      value: recorderFile,
+      timestamp: moment().format('DD-MM-YYYY, H:mm:ss'),
+    }
+
+    setListItem((prevItems) => [...prevItems, metadata])
+  }, []);
 
   const remoteParticipants = participants.map((participant, index) => {
     if (index === 1) {
@@ -176,6 +187,7 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                 <Stack direction="row" justifyContent="end" sx={{ padding: '.5rem', bgcolor: grey[500] }} spacing={1}>
                   <AudioRecorder
                     audioTracks={audioTracks}
+                    addRecorder={handleAddAudioRecorder}
                   />
                   <Button
                     variant="contained"
@@ -216,13 +228,9 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                 }
               </Stack>
             </Grid>
-            {/*<Grid item md={2}>*/}
-            {/*  <ListItemPreview items={listItem} />*/}
-            {/*</Grid>*/}
           </Grid>
         </Grid>
         <Grid item xs={12} sm={4} md={3} sx={{ height: '100%' }}>
-          {/*<Chat username={room ? room.localParticipant.identity : ''} />*/}
           <ListItemPreview items={listItem} />
         </Grid>
       </Grid>
