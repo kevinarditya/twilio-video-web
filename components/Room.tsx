@@ -105,6 +105,18 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
     setListItem((prevItems) => [...prevItems, metadata])
   }, []);
 
+  const handleAddVideoRecorder = useCallback((recorderFile: string) => {
+    const metadata = {
+      id: v4(),
+      type: 'video',
+      filename: 'video-' + moment().format('DDMMYYYYHmmss'),
+      value: recorderFile,
+      timestamp: moment().format('DD-MM-YYYY, H:mm:ss'),
+    }
+
+    setListItem((prevItems) => [...prevItems, metadata])
+  }, [])
+
   const remoteParticipants = participants.map((participant, index) => {
     if (index === 1) {
       return (
@@ -205,6 +217,7 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                   </Button>
                   <ScreenRecorder
                     audioTracks={audioTracks}
+                    addRecorder={handleAddVideoRecorder}
                   />
                   <Button
                     variant="contained"

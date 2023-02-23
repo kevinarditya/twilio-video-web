@@ -1,8 +1,9 @@
-import { Box, Grid, List, Stack, Typography } from '@mui/material';
+import { Box, List, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React from 'react';
 import ImagePreview from "./ImagePreview";
 import AudioPreview from './AudioPreview';
+import VideoPreview from './VideoPreview';
 
 export type Item = {
   id: string,
@@ -31,24 +32,14 @@ export default function ListItemPreview({ items }: ScreenshotPreviewProps) {
       <Box
         sx={{ bgcolor: 'white', height: '100%', padding: '1rem 1rem', overflow: 'scroll' }}
       >
-        {/*<Grid container spacing={1} sx={{ height: '100%' }}>*/}
-        {/*  {*/}
-        {/*    items.map((item,) =>*/}
-        {/*      <Grid key={item.id} item xs={12} md={4} xl={2}>*/}
-        {/*        <img src={item.value} alt="screenshot" />*/}
-        {/*      </Grid>*/}
-        {/*    )*/}
-        {/*  }*/}
-        {/*  <Grid item xs={12} md={4} xl={2}>*/}
-        {/*    <Box sx={{ height: '10rem', bgcolor: grey[300] }}></Box>*/}
-        {/*  </Grid>*/}
-        {/*</Grid>*/}
         <List>
           {
             items.map((item) => {
               switch(item.type) {
                 case 'audio':
                   return <AudioPreview key={item.id} metadata={item} />
+                case 'video':
+                  return <VideoPreview key={item.id} metadata={item} />
                 default:
                   return <ImagePreview key={item.id} metadata={item}/>
               }
