@@ -5,6 +5,7 @@ export type Recorder = {
   startRecord: () => void,
   stopRecord: () => void,
   downloadRecord: () => void,
+  getBlob: () => Promise<string>,
   isVideoActive: boolean,
   isRecording: boolean,
 }
@@ -93,15 +94,20 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
     }
   }, [recorder, isRecording])
 
-  const handleGetBlob = useCallback(async () => {
-    const blob = await recorder.getBlob()
-    return invokeSaveAsDialog(blob, 'video-call-' + Date.now())
+  const handleDownloadRecord = useCallback(async () => {
+    const blob = await recorder.getBlob();
+    return invokeSaveAsDialog(blob, 'video-call-' + Date.now());
+  }, [recorder])
+
+  const handleGetBlob = useCallback( async () => {
+    return await recorder.getBlob();
   }, [recorder])
 
   const customRecorder: Recorder = {
     startRecord: handleStartRecorder,
     stopRecord: handleStopRecorder,
-    downloadRecord: handleGetBlob,
+    downloadRecord: handleDownloadRecord,
+    getBlob: handleGetBlob,
     isVideoActive: false,
     isRecording: isRecording,
   }

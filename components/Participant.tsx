@@ -100,7 +100,7 @@ function Participant({ participant, addAudioTrack, addScreenshot }: ParticipantP
         videoRef={videoRef}
         audioRef={audioRef}
       />
-      <canvas ref={canvasRef} width={300} height={150} style={{ display: "none" }}></canvas>
+      <canvas ref={canvasRef} width={854} height={480} style={{ display: "none" }}></canvas>
     </>
   );
 }

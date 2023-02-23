@@ -5,12 +5,13 @@ import { Recorder, useRecorderPermission } from '../hooks/useRecorderPermission'
 
 type ScreenRecorderProps = {
   audioTracks: Array<MediaStreamTrack>
+  addRecorder: (recorderFile: string) => void
 }
 
-export default function ScreenRecorder({ audioTracks }: ScreenRecorderProps) {
+export default function ScreenRecorder({ audioTracks, addRecorder }: ScreenRecorderProps) {
   const recorder: Recorder = useRecorderPermission(audioTracks, 'video');
 
-  const handleToogleRecording = useCallback(() => {
+  const handleToggleRecording = useCallback(async () => {
     if (!recorder.isRecording) {
       if (recorder) {
         recorder.startRecord();
@@ -18,13 +19,11 @@ export default function ScreenRecorder({ audioTracks }: ScreenRecorderProps) {
     } else {
       if (recorder) {
         recorder.stopRecord();
+        const recorderFileBlob = await recorder.getBlob();
+        addRecorder(recorderFileBlob);
       }
     }
-  }, [recorder]);
-
-  const handleDownloadRecording = useCallback(() => {
-    recorder.downloadRecord();
-  }, [recorder]);
+  }, [recorder, addRecorder]);
 
   return (
     <>
@@ -32,15 +31,9 @@ export default function ScreenRecorder({ audioTracks }: ScreenRecorderProps) {
         variant={recorder.isRecording ? 'outlined' : 'contained'}
         startIcon={recorder.isRecording ? <StopCircle /> : <PlayCircleFilled />}
         sx={{ backgroundColor: recorder.isRecording ? 'white' : '' }}
-        onClick={handleToogleRecording}
+        onClick={handleToggleRecording}
       >
         {recorder.isRecording ? 'Stop Recording' : 'Start Video Recording'}
-      </Button>
-      <Button
-        variant="contained"
-        onClick={handleDownloadRecording}
-      >
-        Download Video
       </Button>
     </>
   );
