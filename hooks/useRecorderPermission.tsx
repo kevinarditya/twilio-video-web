@@ -32,6 +32,18 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
     });
   }, [audioTracks, audio, audioContext, video]);
 
+  const handleStopRecorder = useCallback(async () => {
+    if (isRecording) {
+      recorder.stopRecording();
+      setRecording(false);
+      video.getTracks()
+        .forEach(track => track.stop())
+      alert('Stop Recording');
+    } else {
+      alert('Recording not started yet');
+    }
+  }, [recorder, isRecording, video])
+
   const initVideoRecorder = useCallback(async () => {
     let video = await navigator.mediaDevices.getDisplayMedia({
       video: {
@@ -41,9 +53,13 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
       audio: false,
     });
     setVideo(video);
+    video.getVideoTracks()[0].addEventListener('ended', () => {
+      setRecording(false);
+      setRecorder(null);
+    })
 
     return new MediaStream([...video.getTracks(), ...audio.stream.getTracks()]);
-  }, [audio])
+  }, [audio, recorder])
 
   const initAudioRecorder = useCallback(async () => {
     return new MediaStream([...audio.stream.getTracks()])
@@ -83,16 +99,6 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
       alert('Start Recording');
     }
   }, [getPermissionInitializeRecorder, isRecording, type]);
-
-  const handleStopRecorder = useCallback(async () => {
-    if (isRecording) {
-      recorder.stopRecording();
-      setRecording(false);
-      alert('Stop Recording');
-    } else {
-      alert('Recording not started yet');
-    }
-  }, [recorder, isRecording])
 
   const handleDownloadRecord = useCallback(async () => {
     const blob = await recorder.getBlob();
