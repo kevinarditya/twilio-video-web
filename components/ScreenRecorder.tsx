@@ -18,8 +18,7 @@ export default function ScreenRecorder({ audioTracks, addRecorder }: ScreenRecor
       }
     } else {
       if (recorder) {
-        recorder.stopRecord();
-        const recorderFileBlob = await recorder.getBlob();
+        const recorderFileBlob = await recorder.stopRecord();
         addRecorder(recorderFileBlob);
       }
     }

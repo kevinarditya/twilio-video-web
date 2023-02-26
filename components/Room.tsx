@@ -197,10 +197,6 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                   <Typography variant="h6" align="center">Video Call</Typography>
                 </Box>
                 <Stack direction="row" justifyContent="end" sx={{ padding: '.5rem', bgcolor: grey[500] }} spacing={1}>
-                  <AudioRecorder
-                    audioTracks={audioTracks}
-                    addRecorder={handleAddAudioRecorder}
-                  />
                   <Button
                     variant="contained"
                     onClick={handleScreenshotRemoteParticipant}
@@ -215,6 +211,10 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                   >
                     Switch
                   </Button>
+                  <AudioRecorder
+                    audioTracks={audioTracks}
+                    addRecorder={handleAddAudioRecorder}
+                  />
                   <ScreenRecorder
                     audioTracks={audioTracks}
                     addRecorder={handleAddVideoRecorder}
