@@ -3,11 +3,11 @@ import { invokeSaveAsDialog, RecordRTCPromisesHandler } from "recordrtc";
 
 export type Recorder = {
   startRecord: () => void,
-  stopRecord: () => void,
+  stopRecord: () => Promise<string>,
   downloadRecord: () => void,
-  getBlob: () => Promise<string>,
   isVideoActive: boolean,
   isRecording: boolean,
+  time: number,
 }
 
 export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type: string) => {
@@ -16,6 +16,7 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
   const [recorder, setRecorder] = useState<any>();
   const [audio, setAudio] = useState<MediaStreamAudioDestinationNode>();
   const [video, setVideo] = useState<MediaStream>();
+  const [time, setTime] = useState(0);
 
   useEffect(() => {
     if (!audio) {
@@ -32,6 +33,34 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
     });
   }, [audioTracks, audio, audioContext, video]);
 
+  useEffect(() => {
+    let interval: NodeJS.Timer = null;
+
+    if (isRecording) {
+      interval = setInterval(() => {
+        setTime((time) => time + 10);
+      }, 10);
+    } else {
+      clearInterval(interval);
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [isRecording]);
+
+  const handleStopRecorder = useCallback(async () => {
+    if (isRecording) {
+      await recorder.stopRecording();
+      setRecording(false);
+      setTime(0);
+      if (type === 'video') {
+        video.getTracks()
+          .forEach(track => track.stop())
+      }
+      return recorder.getBlob();
+    }
+  }, [recorder, isRecording, video])
+
   const initVideoRecorder = useCallback(async () => {
     let video = await navigator.mediaDevices.getDisplayMedia({
       video: {
@@ -41,16 +70,20 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
       audio: false,
     });
     setVideo(video);
+    video.getVideoTracks()[0].addEventListener('ended', () => {
+      setRecording(false);
+      setRecorder(null);
+    })
 
     return new MediaStream([...video.getTracks(), ...audio.stream.getTracks()]);
-  }, [audio])
+  }, [audio, recorder])
 
-  const initAudioRecorder = useCallback(async () => {
+  const initAudioRecorder = useCallback(() => {
     return new MediaStream([...audio.stream.getTracks()])
   }, [audio]);
 
   const getPermissionInitializeRecorder = useCallback(async () => {
-    if(type === 'audio') {
+    if (type === 'audio') {
       return initAudioRecorder();
     }
 
@@ -75,41 +108,24 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
     }
     setRecorder(recorder);
 
-    if (isRecording) {
-      alert('Recording already started');
-    } else {
+    if (!isRecording) {
       setRecording(true);
       recorder.startRecording();
-      alert('Start Recording');
     }
   }, [getPermissionInitializeRecorder, isRecording, type]);
-
-  const handleStopRecorder = useCallback(async () => {
-    if (isRecording) {
-      recorder.stopRecording();
-      setRecording(false);
-      alert('Stop Recording');
-    } else {
-      alert('Recording not started yet');
-    }
-  }, [recorder, isRecording])
 
   const handleDownloadRecord = useCallback(async () => {
     const blob = await recorder.getBlob();
     return invokeSaveAsDialog(blob, 'video-call-' + Date.now());
   }, [recorder])
 
-  const handleGetBlob = useCallback( async () => {
-    return await recorder.getBlob();
-  }, [recorder])
-
   const customRecorder: Recorder = {
     startRecord: handleStartRecorder,
     stopRecord: handleStopRecorder,
     downloadRecord: handleDownloadRecord,
-    getBlob: handleGetBlob,
     isVideoActive: false,
     isRecording: isRecording,
+    time: time,
   }
 
   return customRecorder;
