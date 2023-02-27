@@ -58,7 +58,6 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
           .forEach(track => track.stop())
       }
       return recorder.getBlob();
-      // alert('Stop Recording');
     }
   }, [recorder, isRecording, video])
 
@@ -118,10 +117,6 @@ export const useRecorderPermission = (audioTracks: Array<MediaStreamTrack>, type
   const handleDownloadRecord = useCallback(async () => {
     const blob = await recorder.getBlob();
     return invokeSaveAsDialog(blob, 'video-call-' + Date.now());
-  }, [recorder])
-
-  const handleGetBlob = useCallback( async () => {
-    return await recorder.getBlob();
   }, [recorder])
 
   const customRecorder: Recorder = {
