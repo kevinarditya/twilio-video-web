@@ -10,14 +10,16 @@ import { v4 } from 'uuid';
 import moment from "moment";
 const ScreenRecorder = dynamic(() => import('./ScreenRecorder'), { ssr: false });
 const AudioRecorder = dynamic(() => import('./AudioRecorder'), { ssr: false });
+import { VideoRoomMonitor } from '@twilio/video-room-monitor';
 
 type RoomProps = {
   roomName: string,
   token: string,
-  handleLogout: () => void
+  handleLogout: () => void,
+  mode: string
 }
 
-export default function Room({ roomName, token, handleLogout }: RoomProps) {
+export default function Room({ roomName, token, handleLogout, mode }: RoomProps) {
   const [room, setRoom] = React.useState<Video.Room>();
   const [participants, setParticipants] = React.useState([]);
   const [audioTracks, setAudioTracks] = React.useState([]);
@@ -42,6 +44,7 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
       name: roomName
     }).then(room => {
       setRoom(room);
+      VideoRoomMonitor.registerVideoRoom(room);
       room.on('participantConnected', participantConnected);
       room.on('participantDisconnected', participantDisconnected);
       room.participants.forEach(participantConnected);
@@ -116,6 +119,15 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
 
     setListItem((prevItems) => [...prevItems, metadata])
   }, [])
+
+  const handleToggleDebug = () => {
+    if(VideoRoomMonitor.isOpen) {
+      VideoRoomMonitor.closeMonitor();
+      return;
+    }
+
+    VideoRoomMonitor.openMonitor();
+  }
 
   const remoteParticipants = participants.map((participant, index) => {
     if (index === 1) {
@@ -197,6 +209,16 @@ export default function Room({ roomName, token, handleLogout }: RoomProps) {
                   <Typography variant="h6" align="center">Video Call</Typography>
                 </Box>
                 <Stack direction="row" justifyContent="end" sx={{ padding: '.5rem', bgcolor: grey[500] }} spacing={1}>
+                  {
+                    mode === 'debug' && (
+                      <Button
+                        variant="contained"
+                        onClick={handleToggleDebug}
+                      >
+                        Network Stats
+                      </Button>
+                    )
+                  }
                   <Button
                     variant="contained"
                     onClick={handleScreenshotRemoteParticipant}
