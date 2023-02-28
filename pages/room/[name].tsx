@@ -17,7 +17,7 @@ export default function VideoCall() {
   const roomFetchedRef = useRef(false);
   const usernameSubmitRef = useRef(false);
   const router = useRouter()
-  const {name} = router.query
+  const { name, mode } = router.query
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
   type AccessRoom = {
@@ -98,6 +98,7 @@ export default function VideoCall() {
               roomName={roomName}
               token={token}
               handleLogout={handleLogout}
+              mode={mode === null ? 'normal' : mode as string }
             />
           )
         }
