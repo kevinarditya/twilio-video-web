@@ -1,10 +1,12 @@
 import React from 'react';
 import { Item } from './ListItemPreview';
-import { Box, Dialog, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Dialog, ListItem, ListItemButton, ListItemIcon, ListItemSecondaryAction, ListItemText } from '@mui/material';
 import { VideoCall } from '@mui/icons-material';
+import ActionListItem from './ActionListItem';
 
 type VideoPreviewProps = {
-  metadata: Item
+  metadata: Item,
+  onDelete: (id: string) => void,
 }
 
 type VideoDialogProps = {
@@ -24,7 +26,7 @@ function VideoDialog({ open, blob, onClose }: VideoDialogProps) {
     </Dialog>
   )
 }
-function VideoPreview({ metadata }: VideoPreviewProps) {
+function VideoPreview({ metadata, onDelete }: VideoPreviewProps) {
   const { filename, timestamp, value } = metadata;
   const [open, setOpen] = React.useState(false);
 
@@ -44,6 +46,9 @@ function VideoPreview({ metadata }: VideoPreviewProps) {
         </ListItemIcon>
         <ListItemText primary={filename} secondary={timestamp} />
       </ListItemButton>
+      <ListItemSecondaryAction>
+        <ActionListItem metadata={metadata} onDelete={onDelete} />
+      </ListItemSecondaryAction>
       <VideoDialog open={open} blob={value as Blob} onClose={handleClose} />
     </ListItem>
   );

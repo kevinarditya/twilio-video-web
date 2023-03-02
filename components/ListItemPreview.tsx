@@ -40,7 +40,7 @@ export default function ListItemPreview({ items, handleDeleteItem }: ScreenshotP
                 case 'audio':
                   return <AudioPreview key={item.id} metadata={item} onDelete={handleDeleteItem} />
                 case 'video':
-                  return <VideoPreview key={item.id} metadata={item} />
+                  return <VideoPreview key={item.id} metadata={item} onDelete={handleDeleteItem} />
                 default:
                   return <ImagePreview key={item.id} metadata={item}/>
               }
