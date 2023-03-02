@@ -1,5 +1,5 @@
-import { CallEnd } from '@mui/icons-material';
-import { AppBar, Box, Button, CircularProgress, Grid, Stack, Toolbar, Typography } from '@mui/material';
+import { CallEnd, Mic, MicOff, ScreenshotMonitor, Videocam, VideocamOff } from '@mui/icons-material';
+import { AppBar, Box, Button, CircularProgress, Divider, Grid, Stack, Toolbar, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef } from 'react';
@@ -11,6 +11,7 @@ import moment from "moment";
 const ScreenRecorder = dynamic(() => import('./ScreenRecorder'), { ssr: false });
 const AudioRecorder = dynamic(() => import('./AudioRecorder'), { ssr: false });
 import { VideoRoomMonitor } from '@twilio/video-room-monitor';
+import ActionButton from './ActionButton';
 
 type RoomProps = {
   roomName: string,
@@ -26,6 +27,8 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
   const remoteRef = useRef(null);
   const [screenshotCount, setScreenshotCount] = React.useState(1);
   const [listItem, setListItem] = React.useState<Item[]>([]);
+  const [isCamera, setCamera] = React.useState(true);
+  const [isMic, setMic] = React.useState(true);
 
   useEffect(() => {
     const participantConnected = (participant: Video.RemoteParticipant) => {
@@ -129,6 +132,20 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
     VideoRoomMonitor.openMonitor();
   }
 
+  const handleToggleCamera = () => {
+    room.localParticipant.videoTracks.forEach((videoTrack) => {
+      videoTrack.track.enable(!isCamera);
+    });
+    setCamera(!isCamera)
+  }
+
+  const handleToggleMic = () => {
+    room.localParticipant.audioTracks.forEach((audioTrack) => {
+      audioTrack.track.enable(!isMic);
+    })
+    setMic(!isMic);
+  }
+
   const remoteParticipants = participants.map((participant, index) => {
     if (index === 1) {
       return (
@@ -223,15 +240,9 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
                     variant="contained"
                     onClick={handleScreenshotRemoteParticipant}
                     disabled={participants.length < 2}
+                    startIcon={<ScreenshotMonitor />}
                   >
                     Screenshot
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={handleSwitchParticipant}
-                    disabled={participants.length < 2}
-                  >
-                    Switch
                   </Button>
                   <AudioRecorder
                     audioTracks={audioTracks}
@@ -241,6 +252,29 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
                     audioTracks={audioTracks}
                     addRecorder={handleAddVideoRecorder}
                   />
+                  <Button
+                    variant="contained"
+                    onClick={handleSwitchParticipant}
+                    disabled={participants.length < 2}
+                  >
+                    Switch
+                  </Button>
+                  <Divider orientation="vertical" flexItem />
+                  <Stack direction="row" sx={{ bgcolor: grey[500] }} spacing={2}>
+                    <ActionButton
+                      icon={isCamera ? <Videocam /> : <VideocamOff />}
+                      onClick={handleToggleCamera}
+                    >
+                      Camera
+                    </ActionButton>
+                    <ActionButton
+                      icon={isMic ? <Mic /> : <MicOff />}
+                      onClick={handleToggleMic}
+                    >
+                      Mic
+                    </ActionButton>
+                  </Stack>
+                  <Divider orientation="vertical" flexItem />
                   <Button
                     variant="contained"
                     color="error"
