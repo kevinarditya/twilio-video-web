@@ -1,4 +1,4 @@
-import { PlayCircleFilled, StopCircle } from '@mui/icons-material';
+import { MusicNote, StopCircle } from '@mui/icons-material';
 import { Button, Snackbar } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import { Recorder, useRecorderPermission } from '../hooks/useRecorderPermission';
@@ -43,7 +43,7 @@ export default function AudioRecorder({ audioTracks, addRecorder }: AudioRecorde
     <>
       <Button
         variant={recorder.isRecording ? 'outlined' : 'contained'}
-        startIcon={recorder.isRecording ? <StopCircle /> : <PlayCircleFilled />}
+        startIcon={recorder.isRecording ? <StopCircle /> : <MusicNote />}
         sx={{ backgroundColor: recorder.isRecording ? 'white' : '' }}
         onClick={handleToggleRecording}
       >
