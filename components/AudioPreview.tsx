@@ -1,10 +1,12 @@
 import React from 'react';
 import { Item } from './ListItemPreview';
-import { Box, Dialog, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Dialog, ListItem, ListItemButton, ListItemIcon, ListItemSecondaryAction, ListItemText } from '@mui/material';
 import { MusicNote } from '@mui/icons-material';
+import ActionListItem from './ActionListItem';
 
 type AudioPreviewProps = {
-  metadata: Item
+  metadata: Item,
+  onDelete: (id: string) => void,
 }
 
 type AudioDialogProps = {
@@ -25,7 +27,7 @@ function AudioDialog({ open, blob, onClose }: AudioDialogProps) {
   )
 }
 
-function AudioPreview({ metadata }: AudioPreviewProps) {
+function AudioPreview({ metadata, onDelete }: AudioPreviewProps) {
   const { filename, timestamp, value } = metadata;
   const [open, setOpen] = React.useState(false);
 
@@ -45,6 +47,9 @@ function AudioPreview({ metadata }: AudioPreviewProps) {
         </ListItemIcon>
         <ListItemText primary={filename} secondary={timestamp} />
       </ListItemButton>
+      <ListItemSecondaryAction>
+        <ActionListItem metadata={metadata} onDelete={onDelete} />
+      </ListItemSecondaryAction>
       <AudioDialog open={open} blob={value as Blob} onClose={handleClose} />
     </ListItem>
   );

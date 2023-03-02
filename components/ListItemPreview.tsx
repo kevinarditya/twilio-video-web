@@ -9,15 +9,16 @@ export type Item = {
   id: string,
   type: string,
   filename: string,
-  value: string | Blob,
+  value: Blob,
   timestamp: string,
 }
 
 type ScreenshotPreviewProps = {
-  items: Item[]
+  items: Item[],
+  handleDeleteItem?: (id: string) => void,
 }
 
-export default function ListItemPreview({ items }: ScreenshotPreviewProps) {
+export default function ListItemPreview({ items, handleDeleteItem }: ScreenshotPreviewProps) {
   return (
     <Stack
       sx={{
@@ -37,11 +38,11 @@ export default function ListItemPreview({ items }: ScreenshotPreviewProps) {
             items.map((item) => {
               switch(item.type) {
                 case 'audio':
-                  return <AudioPreview key={item.id} metadata={item} />
+                  return <AudioPreview key={item.id} metadata={item} onDelete={handleDeleteItem} />
                 case 'video':
-                  return <VideoPreview key={item.id} metadata={item} />
+                  return <VideoPreview key={item.id} metadata={item} onDelete={handleDeleteItem} />
                 default:
-                  return <ImagePreview key={item.id} metadata={item}/>
+                  return <ImagePreview key={item.id} metadata={item} onDelete={handleDeleteItem} />
               }
             })
           }

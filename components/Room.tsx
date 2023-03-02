@@ -87,7 +87,7 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
     remoteRef.current.handleScreenshot();
   }, []);
 
-  const handleAddScreenshot = useCallback((screenshot: string) => {
+  const handleAddScreenshot = useCallback((screenshot: Blob) => {
     const metadata = {
       id: v4(),
       type: 'image',
@@ -99,7 +99,7 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
     setListItem((prevItems) => [...prevItems, metadata])
   }, [screenshotCount]);
 
-  const handleAddAudioRecorder = useCallback((recorderFile: string) => {
+  const handleAddAudioRecorder = useCallback((recorderFile: Blob) => {
     const metadata = {
       id: v4(),
       type: 'audio',
@@ -111,7 +111,7 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
     setListItem((prevItems) => [...prevItems, metadata])
   }, []);
 
-  const handleAddVideoRecorder = useCallback((recorderFile: string) => {
+  const handleAddVideoRecorder = useCallback((recorderFile: Blob) => {
     const metadata = {
       id: v4(),
       type: 'video',
@@ -144,6 +144,11 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
       audioTrack.track.enable(!isMic);
     })
     setMic(!isMic);
+  }
+
+  const handleDeleteItem = (id: string) => {
+    setListItem(prevListItem =>
+      prevListItem.filter(item => item.id !== id))
   }
 
   const remoteParticipants = participants.map((participant, index) => {
@@ -300,7 +305,7 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
           </Grid>
         </Grid>
         <Grid item xs={12} sm={4} md={3} sx={{ height: '100%' }}>
-          <ListItemPreview items={listItem} />
+          <ListItemPreview items={listItem} handleDeleteItem={handleDeleteItem}/>
         </Grid>
       </Grid>
     </Box >
