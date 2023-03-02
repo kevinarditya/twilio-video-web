@@ -3,7 +3,7 @@ import { invokeSaveAsDialog, RecordRTCPromisesHandler } from "recordrtc";
 
 export type Recorder = {
   startRecord: () => void,
-  stopRecord: () => Promise<string>,
+  stopRecord: () => Promise<Blob>,
   downloadRecord: () => void,
   isVideoActive: boolean,
   isRecording: boolean,

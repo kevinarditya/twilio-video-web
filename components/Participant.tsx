@@ -5,7 +5,7 @@ import VideoAudio from './VideoAudio';
 type ParticipantProps = {
   participant: Video.LocalParticipant | Video.RemoteParticipant,
   addAudioTrack: (audioTrack: any) => void,
-  addScreenshot?: (screenshot: string) => void,
+  addScreenshot?: (screenshot: Blob) => void,
 }
 type RemoteRef = {
   handleScreenshot: () => void;
@@ -25,7 +25,7 @@ function Participant({ participant, addAudioTrack, addScreenshot }: ParticipantP
     ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
     canvas.toBlob(function(blob: Blob) {
-      addScreenshot(URL.createObjectURL(blob));
+      addScreenshot(blob);
     });
   }
 

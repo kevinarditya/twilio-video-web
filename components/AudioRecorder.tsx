@@ -6,7 +6,7 @@ import Timer from './Timer';
 
 type AudioRecorderProps = {
   audioTracks: Array<MediaStreamTrack>,
-  addRecorder: (recorderFile: string) => void
+  addRecorder: (recorderFile: Blob) => void
 }
 
 export default function AudioRecorder({ audioTracks, addRecorder }: AudioRecorderProps) {

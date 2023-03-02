@@ -1,15 +1,25 @@
 import { InsertPhoto } from '@mui/icons-material';
-import { Box, Dialog, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import {
+  Box,
+  Dialog,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  ListItemText
+} from '@mui/material';
 import React from 'react';
 import { Item } from "./ListItemPreview";
+import ActionListItem from './ActionListItem';
 
 type ImagePreviewProps = {
-  metadata: Item
+  metadata: Item,
+  onDelete: (id: string) => void,
 }
 
 type ImageDialogProps = {
   open: boolean,
-  blob: string,
+  blob: Blob,
   onClose: () => void,
 }
 
@@ -17,13 +27,13 @@ function ImageDialog({ open, blob, onClose }: ImageDialogProps) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '.5rem'}}>
-        <img src={blob} alt="screenshot" />
+        <img src={URL.createObjectURL(blob)} alt="screenshot" />
       </Box>
     </Dialog>
   )
 }
 
-function ImagePreview({ metadata }: ImagePreviewProps) {
+function ImagePreview({ metadata, onDelete }: ImagePreviewProps) {
   const { filename, timestamp, value } = metadata;
   const [open, setOpen] = React.useState(false);
 
@@ -43,7 +53,10 @@ function ImagePreview({ metadata }: ImagePreviewProps) {
         </ListItemIcon>
         <ListItemText primary={filename} secondary={timestamp} />
       </ListItemButton>
-      <ImageDialog open={open} blob={value as string} onClose={handleClose} />
+      <ListItemSecondaryAction>
+        <ActionListItem metadata={metadata} onDelete={onDelete} />
+      </ListItemSecondaryAction>
+      <ImageDialog open={open} blob={value as Blob} onClose={handleClose} />
     </ListItem>
   );
 }

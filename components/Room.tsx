@@ -87,7 +87,7 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
     remoteRef.current.handleScreenshot();
   }, []);
 
-  const handleAddScreenshot = useCallback((screenshot: string) => {
+  const handleAddScreenshot = useCallback((screenshot: Blob) => {
     const metadata = {
       id: v4(),
       type: 'image',
@@ -99,7 +99,7 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
     setListItem((prevItems) => [...prevItems, metadata])
   }, [screenshotCount]);
 
-  const handleAddAudioRecorder = useCallback((recorderFile: string) => {
+  const handleAddAudioRecorder = useCallback((recorderFile: Blob) => {
     const metadata = {
       id: v4(),
       type: 'audio',
@@ -111,7 +111,7 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
     setListItem((prevItems) => [...prevItems, metadata])
   }, []);
 
-  const handleAddVideoRecorder = useCallback((recorderFile: string) => {
+  const handleAddVideoRecorder = useCallback((recorderFile: Blob) => {
     const metadata = {
       id: v4(),
       type: 'video',
