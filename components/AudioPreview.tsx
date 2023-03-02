@@ -1,8 +1,8 @@
 import React from 'react';
 import { Item } from './ListItemPreview';
-import { Box, Dialog, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Tooltip } from '@mui/material';
-import { Delete, Download, MusicNote } from '@mui/icons-material';
-import { invokeSaveAsDialog } from 'recordrtc';
+import { Box, Dialog, ListItem, ListItemButton, ListItemIcon, ListItemSecondaryAction, ListItemText } from '@mui/material';
+import { MusicNote } from '@mui/icons-material';
+import ActionListItem from './ActionListItem';
 
 type AudioPreviewProps = {
   metadata: Item,
@@ -28,7 +28,7 @@ function AudioDialog({ open, blob, onClose }: AudioDialogProps) {
 }
 
 function AudioPreview({ metadata, onDelete }: AudioPreviewProps) {
-  const { filename, timestamp, value, id } = metadata;
+  const { filename, timestamp, value } = metadata;
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -40,29 +40,16 @@ function AudioPreview({ metadata, onDelete }: AudioPreviewProps) {
   };
 
   return (
-    <ListItem
-      secondaryAction={
-        <Stack direction="row">
-          <Tooltip title="Download">
-            <IconButton onClick={() => invokeSaveAsDialog(value as Blob, 'video-call-' + Date.now())}>
-              <Download />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton onClick={() => onDelete(id)}>
-              <Delete />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      }
-      disablePadding
-    >
+    <ListItem disablePadding>
       <ListItemButton onClick={handleClickOpen}>
         <ListItemIcon>
           <MusicNote />
         </ListItemIcon>
         <ListItemText primary={filename} secondary={timestamp} />
       </ListItemButton>
+      <ListItemSecondaryAction>
+        <ActionListItem metadata={metadata} onDelete={onDelete} />
+      </ListItemSecondaryAction>
       <AudioDialog open={open} blob={value as Blob} onClose={handleClose} />
     </ListItem>
   );
