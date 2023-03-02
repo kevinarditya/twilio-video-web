@@ -146,6 +146,11 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
     setMic(!isMic);
   }
 
+  const handleDeleteItem = (id: string) => {
+    setListItem(prevListItem =>
+      prevListItem.filter(item => item.id !== id))
+  }
+
   const remoteParticipants = participants.map((participant, index) => {
     if (index === 1) {
       return (
@@ -300,7 +305,7 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
           </Grid>
         </Grid>
         <Grid item xs={12} sm={4} md={3} sx={{ height: '100%' }}>
-          <ListItemPreview items={listItem} />
+          <ListItemPreview items={listItem} handleDeleteItem={handleDeleteItem}/>
         </Grid>
       </Grid>
     </Box >

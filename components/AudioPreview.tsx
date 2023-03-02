@@ -1,10 +1,12 @@
 import React from 'react';
 import { Item } from './ListItemPreview';
-import { Box, Dialog, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { MusicNote } from '@mui/icons-material';
+import { Box, Dialog, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Tooltip } from '@mui/material';
+import { Delete, Download, MusicNote } from '@mui/icons-material';
+import { invokeSaveAsDialog } from 'recordrtc';
 
 type AudioPreviewProps = {
-  metadata: Item
+  metadata: Item,
+  onDelete: (id: string) => void,
 }
 
 type AudioDialogProps = {
@@ -25,8 +27,8 @@ function AudioDialog({ open, blob, onClose }: AudioDialogProps) {
   )
 }
 
-function AudioPreview({ metadata }: AudioPreviewProps) {
-  const { filename, timestamp, value } = metadata;
+function AudioPreview({ metadata, onDelete }: AudioPreviewProps) {
+  const { filename, timestamp, value, id } = metadata;
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -38,7 +40,23 @@ function AudioPreview({ metadata }: AudioPreviewProps) {
   };
 
   return (
-    <ListItem disablePadding>
+    <ListItem
+      secondaryAction={
+        <Stack direction="row">
+          <Tooltip title="Download">
+            <IconButton onClick={() => invokeSaveAsDialog(value as Blob, 'video-call-' + Date.now())}>
+              <Download />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton onClick={() => onDelete(id)}>
+              <Delete />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      }
+      disablePadding
+    >
       <ListItemButton onClick={handleClickOpen}>
         <ListItemIcon>
           <MusicNote />
