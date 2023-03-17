@@ -18,9 +18,9 @@ type AudioDialogProps = {
 function AudioDialog({ open, blob, onClose }: AudioDialogProps) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '.5rem'}}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '.5rem' }}>
         <audio controls autoPlay>
-          <source src={URL.createObjectURL(blob)} type="audio/ogg"/>
+          <source src={URL.createObjectURL(blob)} type="audio/ogg" />
         </audio>
       </Box>
     </Dialog>
