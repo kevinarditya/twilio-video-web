@@ -6,7 +6,6 @@ import ActionListItem from './ActionListItem';
 
 type AudioPreviewProps = {
   metadata: Item,
-  onDelete: (id: string) => void,
 }
 
 type AudioDialogProps = {
@@ -27,7 +26,7 @@ function AudioDialog({ open, blob, onClose }: AudioDialogProps) {
   )
 }
 
-function AudioPreview({ metadata, onDelete }: AudioPreviewProps) {
+function AudioPreview({ metadata }: AudioPreviewProps) {
   const { filename, timestamp, value } = metadata;
   const [open, setOpen] = React.useState(false);
 
@@ -48,7 +47,7 @@ function AudioPreview({ metadata, onDelete }: AudioPreviewProps) {
         <ListItemText primary={filename} secondary={timestamp} />
       </ListItemButton>
       <ListItemSecondaryAction>
-        <ActionListItem metadata={metadata} onDelete={onDelete} />
+        <ActionListItem metadata={metadata}/>
       </ListItemSecondaryAction>
       <AudioDialog open={open} blob={value as Blob} onClose={handleClose} />
     </ListItem>

@@ -4,6 +4,8 @@ import React from 'react';
 import ImagePreview from "./ImagePreview";
 import AudioPreview from './AudioPreview';
 import VideoPreview from './VideoPreview';
+import { useSelector } from 'react-redux';
+import { getFilesState } from '../redux/reducers/filesSlice';
 
 export type Item = {
   id: string,
@@ -13,12 +15,9 @@ export type Item = {
   timestamp: string,
 }
 
-type ScreenshotPreviewProps = {
-  items: Item[],
-  handleDeleteItem?: (id: string) => void,
-}
+export default function ListItemPreview() {
+  const { list } = useSelector(getFilesState);
 
-export default function ListItemPreview({ items, handleDeleteItem }: ScreenshotPreviewProps) {
   return (
     <Stack
       sx={{
@@ -35,14 +34,14 @@ export default function ListItemPreview({ items, handleDeleteItem }: ScreenshotP
       >
         <List>
           {
-            items.map((item) => {
+            list.map((item) => {
               switch(item.type) {
                 case 'audio':
-                  return <AudioPreview key={item.id} metadata={item} onDelete={handleDeleteItem} />
+                  return <AudioPreview key={item.id} metadata={item} />
                 case 'video':
-                  return <VideoPreview key={item.id} metadata={item} onDelete={handleDeleteItem} />
+                  return <VideoPreview key={item.id} metadata={item} />
                 default:
-                  return <ImagePreview key={item.id} metadata={item} onDelete={handleDeleteItem} />
+                  return <ImagePreview key={item.id} metadata={item} />
               }
             })
           }

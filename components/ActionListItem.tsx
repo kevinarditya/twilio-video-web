@@ -3,10 +3,11 @@ import { Box, CircularProgress, CircularProgressProps, IconButton, Stack, Toolti
 import React, { useState } from 'react';
 import { Item } from './ListItemPreview';
 import axios, { AxiosError } from 'axios';
+import { useDispatch } from 'react-redux';
+import { deleteFile } from '../redux/reducers/filesSlice';
 
 type ActionListItemProps = {
   metadata: Item,
-  onDelete: (id: string) => void,
 }
 
 type ServerError = { errorMessage: string };
@@ -40,11 +41,12 @@ function CircularProgressWithLabel(
 }
 
 
-function ActionListItem({ metadata, onDelete }: ActionListItemProps) {
+function ActionListItem({ metadata }: ActionListItemProps) {
   const { filename, value, id, type } = metadata;
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
   const [isUploading ,setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const dispatch = useDispatch();
 
   const handleDownload = () => {
     const hyperlink = document.createElement('a');
@@ -55,7 +57,7 @@ function ActionListItem({ metadata, onDelete }: ActionListItemProps) {
   }
 
   const handleDeleteItem = () => {
-      onDelete(id)
+    dispatch(deleteFile(id));
   };
 
   const handleUpload = async () => {

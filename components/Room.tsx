@@ -12,6 +12,8 @@ const ScreenRecorder = dynamic(() => import('./ScreenRecorder'), { ssr: false })
 const AudioRecorder = dynamic(() => import('./AudioRecorder'), { ssr: false });
 import { VideoRoomMonitor } from '@twilio/video-room-monitor';
 import ActionButton from './ActionButton';
+import { useDispatch } from 'react-redux';
+import { addFile } from '../redux/reducers/filesSlice';
 
 type RoomProps = {
   roomName: string,
@@ -26,9 +28,9 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
   const [audioTracks, setAudioTracks] = React.useState([]);
   const remoteRef = useRef(null);
   const [screenshotCount, setScreenshotCount] = React.useState(1);
-  const [listItem, setListItem] = React.useState<Item[]>([]);
   const [isCamera, setCamera] = React.useState(true);
   const [isMic, setMic] = React.useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const participantConnected = (participant: Video.RemoteParticipant) => {
@@ -96,32 +98,8 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
       timestamp: moment().format('DD-MM-YYYY, H:mm:ss'),
     };
     setScreenshotCount(screenshotCount + 1);
-    setListItem((prevItems) => [...prevItems, metadata])
-  }, [screenshotCount]);
-
-  const handleAddAudioRecorder = useCallback((recorderFile: Blob) => {
-    const metadata = {
-      id: v4(),
-      type: 'audio',
-      filename: 'audio-' + moment().format('DDMMYYYYHmmss'),
-      value: recorderFile,
-      timestamp: moment().format('DD-MM-YYYY, H:mm:ss'),
-    }
-
-    setListItem((prevItems) => [...prevItems, metadata])
-  }, []);
-
-  const handleAddVideoRecorder = useCallback((recorderFile: Blob) => {
-    const metadata = {
-      id: v4(),
-      type: 'video',
-      filename: 'video-' + moment().format('DDMMYYYYHmmss'),
-      value: recorderFile,
-      timestamp: moment().format('DD-MM-YYYY, H:mm:ss'),
-    }
-
-    setListItem((prevItems) => [...prevItems, metadata])
-  }, [])
+    dispatch(addFile(metadata));
+  }, [screenshotCount, dispatch]);
 
   const handleToggleDebug = () => {
     if(VideoRoomMonitor.isOpen) {
@@ -144,11 +122,6 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
       audioTrack.track.enable(!isMic);
     })
     setMic(!isMic);
-  }
-
-  const handleDeleteItem = (id: string) => {
-    setListItem(prevListItem =>
-      prevListItem.filter(item => item.id !== id))
   }
 
   const remoteParticipants = participants.map((participant, index) => {
@@ -251,11 +224,9 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
                   </Button>
                   <AudioRecorder
                     audioTracks={audioTracks}
-                    addRecorder={handleAddAudioRecorder}
                   />
                   <ScreenRecorder
                     audioTracks={audioTracks}
-                    addRecorder={handleAddVideoRecorder}
                   />
                   <Button
                     variant="contained"
@@ -305,7 +276,7 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
           </Grid>
         </Grid>
         <Grid item xs={12} sm={4} md={3} sx={{ height: '100%' }}>
-          <ListItemPreview items={listItem} handleDeleteItem={handleDeleteItem}/>
+          <ListItemPreview/>
         </Grid>
       </Grid>
     </Box >

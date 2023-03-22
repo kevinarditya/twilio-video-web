@@ -6,7 +6,6 @@ import ActionListItem from './ActionListItem';
 
 type VideoPreviewProps = {
   metadata: Item,
-  onDelete: (id: string) => void,
 }
 
 type VideoDialogProps = {
@@ -26,7 +25,7 @@ function VideoDialog({ open, blob, onClose }: VideoDialogProps) {
     </Dialog>
   )
 }
-function VideoPreview({ metadata, onDelete }: VideoPreviewProps) {
+function VideoPreview({ metadata }: VideoPreviewProps) {
   const { filename, timestamp, value } = metadata;
   const [open, setOpen] = React.useState(false);
 
@@ -47,7 +46,7 @@ function VideoPreview({ metadata, onDelete }: VideoPreviewProps) {
         <ListItemText primary={filename} secondary={timestamp} />
       </ListItemButton>
       <ListItemSecondaryAction>
-        <ActionListItem metadata={metadata} onDelete={onDelete} />
+        <ActionListItem metadata={metadata}/>
       </ListItemSecondaryAction>
       <VideoDialog open={open} blob={value as Blob} onClose={handleClose} />
     </ListItem>

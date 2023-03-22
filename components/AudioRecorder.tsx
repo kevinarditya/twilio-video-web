@@ -3,16 +3,20 @@ import { Button, Snackbar } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import { Recorder, useRecorderPermission } from '../hooks/useRecorderPermission';
 import Timer from './Timer';
+import { v4 } from 'uuid';
+import moment from 'moment/moment';
+import { useDispatch } from 'react-redux';
+import { addFile } from '../redux/reducers/filesSlice';
 
 type AudioRecorderProps = {
   audioTracks: Array<MediaStreamTrack>,
-  addRecorder: (recorderFile: Blob) => void
 }
 
-export default function AudioRecorder({ audioTracks, addRecorder }: AudioRecorderProps) {
+export default function AudioRecorder({ audioTracks }: AudioRecorderProps) {
   const recorder: Recorder = useRecorderPermission(audioTracks, 'audio');
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
+  const dispatch = useDispatch();
 
   const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -21,6 +25,18 @@ export default function AudioRecorder({ audioTracks, addRecorder }: AudioRecorde
 
     setOpen(false);
   };
+
+  const handleAddRecorder = useCallback((recorderFile: Blob) => {
+    const metadata = {
+      id: v4(),
+      type: 'audio',
+      filename: 'audio-' + moment().format('DDMMYYYYHmmss'),
+      value: recorderFile,
+      timestamp: moment().format('DD-MM-YYYY, H:mm:ss'),
+    }
+
+    dispatch(addFile(metadata));
+  }, [dispatch])
 
   const handleToggleRecording = useCallback(async () => {
     if (!recorder.isRecording) {
@@ -34,10 +50,10 @@ export default function AudioRecorder({ audioTracks, addRecorder }: AudioRecorde
         const recorderFileBlob = await recorder.stopRecord();
         setMessage('Stop Audio Recording');
         setOpen(true);
-        addRecorder(recorderFileBlob);
+        handleAddRecorder(recorderFileBlob);
       }
     }
-  }, [recorder, addRecorder]);
+  }, [recorder, handleAddRecorder]);
 
   return (
     <>

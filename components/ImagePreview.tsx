@@ -14,7 +14,6 @@ import ActionListItem from './ActionListItem';
 
 type ImagePreviewProps = {
   metadata: Item,
-  onDelete: (id: string) => void,
 }
 
 type ImageDialogProps = {
@@ -33,7 +32,7 @@ function ImageDialog({ open, blob, onClose }: ImageDialogProps) {
   )
 }
 
-function ImagePreview({ metadata, onDelete }: ImagePreviewProps) {
+function ImagePreview({ metadata }: ImagePreviewProps) {
   const { filename, timestamp, value } = metadata;
   const [open, setOpen] = React.useState(false);
 
@@ -54,7 +53,7 @@ function ImagePreview({ metadata, onDelete }: ImagePreviewProps) {
         <ListItemText primary={filename} secondary={timestamp} />
       </ListItemButton>
       <ListItemSecondaryAction>
-        <ActionListItem metadata={metadata} onDelete={onDelete} />
+        <ActionListItem metadata={metadata}/>
       </ListItemSecondaryAction>
       <ImageDialog open={open} blob={value as Blob} onClose={handleClose} />
     </ListItem>
