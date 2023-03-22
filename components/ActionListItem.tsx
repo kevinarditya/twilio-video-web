@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Item } from './ListItemPreview';
 import axios, { AxiosError } from 'axios';
 import { useDispatch } from 'react-redux';
-import { deleteFile } from '../redux/reducers/filesSlice';
+import { deleteFile } from '../redux/reducers/fileSlice';
 
 type ActionListItemProps = {
   metadata: Item,

@@ -3,16 +3,14 @@ import { Button, Snackbar } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import { Recorder, useRecorderPermission } from '../hooks/useRecorderPermission';
 import Timer from './Timer';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 import moment from 'moment/moment';
-import { addFile } from '../redux/reducers/filesSlice';
+import { addFile } from '../redux/reducers/fileSlice';
+import { getTrackState } from '../redux/reducers/trackSlice';
 
-type ScreenRecorderProps = {
-  audioTracks: Array<MediaStreamTrack>
-}
-
-export default function ScreenRecorder({ audioTracks }: ScreenRecorderProps) {
+export default function ScreenRecorder() {
+  const { audioTracks } = useSelector(getTrackState);
   const recorder: Recorder = useRecorderPermission(audioTracks, 'video');
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');

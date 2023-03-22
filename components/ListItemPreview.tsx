@@ -5,7 +5,7 @@ import ImagePreview from "./ImagePreview";
 import AudioPreview from './AudioPreview';
 import VideoPreview from './VideoPreview';
 import { useSelector } from 'react-redux';
-import { getFilesState } from '../redux/reducers/filesSlice';
+import { getFilesState } from '../redux/reducers/fileSlice';
 
 export type Item = {
   id: string,

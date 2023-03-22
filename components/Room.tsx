@@ -5,15 +5,16 @@ import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef } from 'react';
 import Video from 'twilio-video';
 import Participant from './Participant';
-import ListItemPreview, { Item } from './ListItemPreview';
+import ListItemPreview from './ListItemPreview';
 import { v4 } from 'uuid';
 import moment from "moment";
-const ScreenRecorder = dynamic(() => import('./ScreenRecorder'), { ssr: false });
-const AudioRecorder = dynamic(() => import('./AudioRecorder'), { ssr: false });
 import { VideoRoomMonitor } from '@twilio/video-room-monitor';
 import ActionButton from './ActionButton';
 import { useDispatch } from 'react-redux';
-import { addFile } from '../redux/reducers/filesSlice';
+import { addFile } from '../redux/reducers/fileSlice';
+
+const ScreenRecorder = dynamic(() => import('./ScreenRecorder'), { ssr: false });
+const AudioRecorder = dynamic(() => import('./AudioRecorder'), { ssr: false });
 
 type RoomProps = {
   roomName: string,
@@ -25,7 +26,6 @@ type RoomProps = {
 export default function Room({ roomName, token, handleLogout, mode }: RoomProps) {
   const [room, setRoom] = React.useState<Video.Room>();
   const [participants, setParticipants] = React.useState([]);
-  const [audioTracks, setAudioTracks] = React.useState([]);
   const remoteRef = useRef(null);
   const [screenshotCount, setScreenshotCount] = React.useState(1);
   const [isCamera, setCamera] = React.useState(true);
@@ -75,10 +75,6 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
       setParticipants(prevParticipants => [...prevParticipants.filter(p => p.state !== 'disconnected'), room.localParticipant]);
     }
   }, [room, participants])
-
-  const handleAddParticipantTrack = useCallback((audioTrack: any) => {
-    setAudioTracks((prevAudioTracks) => [...prevAudioTracks, audioTrack]);
-  }, []);
 
   const handleSwitchParticipant = useCallback(() => {
     const newParticipants = [participants[1], participants[0]]
@@ -142,9 +138,9 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
         >
           {
             participant !== room.localParticipant ? (
-              <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} ref={remoteRef} addScreenshot={handleAddScreenshot} />
+              <Participant participant={participant} ref={remoteRef} addScreenshot={handleAddScreenshot} />
             ) : (
-              <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
+              <Participant participant={participant} />
             )
           }
 
@@ -162,9 +158,9 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
       >
         {
           participant !== room.localParticipant ? (
-            <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} ref={remoteRef} addScreenshot={handleAddScreenshot} />
+            <Participant participant={participant} ref={remoteRef} addScreenshot={handleAddScreenshot} />
           ) : (
-            <Participant participant={participant} addAudioTrack={handleAddParticipantTrack} />
+            <Participant participant={participant} />
           )
         }
       </Box>
@@ -222,12 +218,8 @@ export default function Room({ roomName, token, handleLogout, mode }: RoomProps)
                   >
                     Screenshot
                   </Button>
-                  <AudioRecorder
-                    audioTracks={audioTracks}
-                  />
-                  <ScreenRecorder
-                    audioTracks={audioTracks}
-                  />
+                  <AudioRecorder />
+                  <ScreenRecorder />
                   <Button
                     variant="contained"
                     onClick={handleSwitchParticipant}

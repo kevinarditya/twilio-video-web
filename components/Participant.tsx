@@ -1,23 +1,26 @@
 import React, { forwardRef, Ref, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import Video from 'twilio-video';
 import VideoAudio from './VideoAudio';
+import { useDispatch } from 'react-redux';
+import { addAudioTrack } from '../redux/reducers/trackSlice';
 
 type ParticipantProps = {
   participant: Video.LocalParticipant | Video.RemoteParticipant,
-  addAudioTrack: (audioTrack: any) => void,
   addScreenshot?: (screenshot: Blob) => void,
 }
 type RemoteRef = {
   handleScreenshot: () => void;
 }
 
-function Participant({ participant, addAudioTrack, addScreenshot }: ParticipantProps, ref: Ref<RemoteRef>) {
+function Participant({ participant, addScreenshot }: ParticipantProps, ref: Ref<RemoteRef>) {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
 
   const videoRef = useRef<HTMLVideoElement>(null!);
   const audioRef = useRef<HTMLAudioElement>(null!);
   const canvasRef = useRef(null)
+
+  const dispatch = useDispatch();
 
   const handleScreenshot = () => {
     const canvas = canvasRef.current;
@@ -87,12 +90,12 @@ function Participant({ participant, addAudioTrack, addScreenshot }: ParticipantP
     const audioTrack = audioTracks[0];
     if (audioTrack) {
       audioTrack.attach(audioRef.current);
-      addAudioTrack(audioTrack.mediaStreamTrack);
+      dispatch(addAudioTrack(audioTrack.mediaStreamTrack));
       return () => {
         audioTrack.detach();
       };
     }
-  }, [audioTracks, addAudioTrack]);
+  }, [audioTracks, dispatch]);
 
   return (
     <>

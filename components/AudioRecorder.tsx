@@ -5,14 +5,12 @@ import { Recorder, useRecorderPermission } from '../hooks/useRecorderPermission'
 import Timer from './Timer';
 import { v4 } from 'uuid';
 import moment from 'moment/moment';
-import { useDispatch } from 'react-redux';
-import { addFile } from '../redux/reducers/filesSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFile } from '../redux/reducers/fileSlice';
+import { getTrackState } from '../redux/reducers/trackSlice';
 
-type AudioRecorderProps = {
-  audioTracks: Array<MediaStreamTrack>,
-}
-
-export default function AudioRecorder({ audioTracks }: AudioRecorderProps) {
+export default function AudioRecorder() {
+  const { audioTracks } = useSelector(getTrackState);
   const recorder: Recorder = useRecorderPermission(audioTracks, 'audio');
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
